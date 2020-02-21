@@ -5,6 +5,7 @@ const app = getApp()
 Page({
   data: {
     motto: 'Hello World',
+    var_Temp:20,
     userInfo: {},
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo')
@@ -19,6 +20,12 @@ Page({
   bluetoothTap: function () {
     wx.navigateTo({
       url: '../bluetooth/bluetooth'
+    })
+  },
+    //事件处理函数,按钮测试
+  btn_Temp_Add:function(){
+   this.setData({
+      var_Temp:23
     })
   },
   onLoad: function () {

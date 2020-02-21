@@ -1,15 +1,59 @@
 {
   "pages": [
+    "pages/start/start",  
     "pages/index/index",
     "pages/logs/logs",
-    "pages/bluetooth/bluetooth"
+    "pages/bluetooth/bluetooth",
+    "pages/setup/setup",
+    "pages/help/help"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "WeChat",
-    "navigationBarTextStyle": "black"
+    "navigationBarBackgroundColor": "#1BC3B8",
+    "navigationBarTitleText": "天尚泉",
+    "navigationBarTextStyle": "white"
   },
-  "style": "v2",
+  "tabBar": {
+ 
+    "color": "#000000",
+    "selectedColor": "#11cd6e",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/icon/home.png",
+        "selectedIconPath": "images/icon/home-s1.png"
+      },
+      {
+        "pagePath": "pages/setup/setup",
+        "text": "设置",
+        "iconPath": "images/icon/setup.png",
+        "selectedIconPath": "images/icon/setup-s1.png"
+      },
+      {
+        "pagePath": "pages/help/help",
+        "text": "帮助",
+        "iconPath": "images/icon/help.png",
+        "selectedIconPath": "images/icon/help-s1.png"
+      },
+      {
+        "pagePath": "pages/logs/logs",
+        "text": "日志",
+        "iconPath": "images/icon/log.png",
+        "selectedIconPath": "images/icon/log-s1.png"
+      }
+    ]
+  },
+  "networkTimeout": {
+    "request": 10000,
+    "downloadFile": 10000
+  },
+  "debug": true,
+  "navigateToMiniProgramAppIdList": [
+    "wxe5f52902cf4de896"
+  ],
   "sitemapLocation": "sitemap.json"
 }

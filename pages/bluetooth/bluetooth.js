@@ -148,7 +148,7 @@ Page({
         if (!device.name && !device.localName) {
           return
         }
-        console.log('pass',device)
+        console.log('pass', device)
         const foundDevices = this.data.devices
         const idx = inArray(foundDevices, 'deviceId', device.deviceId)
         const data = {}
@@ -223,7 +223,7 @@ Page({
             this._deviceId = deviceId
             this._serviceId = serviceId
             this._characteristicId = item.uuid
-            this.writeBLECharacteristicValue()
+            // this.writeBLECharacteristicValue()
           }
           if (item.properties.notify || item.properties.indicate) {
             wx.notifyBLECharacteristicValueChange({
@@ -264,27 +264,25 @@ Page({
   },
   writeBLECharacteristicValue() {
     // 向蓝牙设备发送一个0x00的16进制数据
-    let buffer = new ArrayBuffer(2)
+    let buffer = new ArrayBuffer(20)
     let dataView = new DataView(buffer)
-    dataView.setUint8(0, Math.random() * 255 | 0)
-      dataView.setUint8(1, Math.random() * 255 | 0)
+    for (var i = 0; i < dataView.byteLength; i++) {
+      dataView.setUint8(i, Math.random() * 255 | 0)
 
- 
-
-
+    }
     // console.log('writeBLECharacteristicValue buffer', buffer)
     wx.writeBLECharacteristicValue({
       deviceId: this._deviceId,
       serviceId: this._serviceId,
       characteristicId: this._characteristicId,
-      value: buffer, 
+      value: buffer,
       success: function (res) {
         console.log('writeBLECharacteristicValue success', res)
-       },
-      fail: function (res) { 
+      },
+      fail: function (res) {
         console.log('writeBLECharacteristicValue fail', res)
       },
-      complete: function (res) { 
+      complete: function (res) {
         // console.log('writeBLECharacteristicValue complete', res)
       },
     })

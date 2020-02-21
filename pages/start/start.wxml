@@ -1,0 +1,25 @@
+<!--start.wxml-->
+<view class="container">
+  <view class="remind-box" wx:if="{{remind}}">
+    <image class="remind-img" src="/images/more/loading.gif"></image>
+  </view>
+  <block wx:else>
+
+    <view class="content">
+      <view class="hd" style="transform:rotateZ({{angle}}deg);">
+        <image class="user" src="{{userInfo.avatarUrl}}"></image>
+        <image class="wave" src="/images/more/wave.png" mode="aspectFill"></image>
+        <image class="wave wave-bg" src="/images/more/wave.png" mode="aspectFill"></image>
+      </view>
+      <view class="bd">
+        <image class="remind-link" src="/images/more/loading.gif"></image>
+        <text class="moto">{{moto}}</text>
+        <view class="confirm-btn" bindtap='goToIndex'>
+          <text >首页</text>
+        </view>
+        <image class="logo" src="/images/more/logo_TQ2.png"></image>
+        <text class="copyright">纯净之水天上来</text>
+        </view>
+    </view>
+  </block>
+</view>

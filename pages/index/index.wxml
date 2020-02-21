@@ -1,14 +1,12 @@
 <!--index.wxml-->
+<view class="imagesize">
+    <image class='bg-img' mode='aspectFill' src="/images/Main.png" > </image>
+</view>
 <view class="container">
-  <view class="userinfo">
-    <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
-    <block wx:else>
-      <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-    </block>
-  </view>
-  <view class="usermotto">
-    <text class="user-motto">{{motto}}</text>
-  </view>
-  <button bindtap="bluetoothTap">蓝牙</button>
+    <view class="str_status">运行状态:</view>
+    <view class="str_var_status">优</view>
+    <view class="str_water-normal">常温水</view>
+    <button class="bluetooth_btn" type="default" size="mini" bindtap="bluetoothTap" >蓝牙</button>
+    <button class='btn_Temp' type='default' size='mini' bindtap='btn_Temp_Add' id="{{item.poem_id}}">温度变化</button>
+    <view class="str_var_Temp">{{var_Temp}}</view>
 </view>
