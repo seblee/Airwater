@@ -14,11 +14,18 @@ Page({
       url: '/pages/index/index',
     });
   },
-  onLoad: function() {
+  onLoad: function(options) {
     var that = this
-    wx.setNavigationBarTitle({
-      title: wx.getStorageSync('mallName')
-    })
+//    wx.setNavigationBarTitle({
+//      title: wx.getStorageSync('Airwater')
+//    })
+
+    if (options.q !== undefined) {
+      var scan_url = decodeURIComponent(options.q);
+      console.log(scan_url);
+      }else{
+        console.log(123);
+      }
   },
 
   onReady: function() {
