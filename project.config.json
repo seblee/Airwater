@@ -34,13 +34,29 @@
 			"current": -1,
 			"list": []
 		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
 		"game": {
 			"currentL": -1,
 			"list": []
 		},
-		"miniprogram": {
+		"gamePlugin": {
 			"current": -1,
 			"list": []
+		},
+		"miniprogram": {
+			"current": -1,
+			"list": [
+				{
+					"id": 0,
+					"name": "启动参数",
+					"pathName": "pages/start/start",
+					"query": "id=66:00:0A:0B:02:08",
+					"scene": null
+				}
+			]
 		}
 	}
 }
