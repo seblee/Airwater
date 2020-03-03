@@ -1,6 +1,40 @@
 //start.js
 //获取应用实例
 var app = getApp();
+
+/**
+* 将字符串转换成ArrayBufer
+*/
+function string2buf(str) {
+  let val = ""
+  if(!str) return;
+  let length = str.length;
+  let index = 0;
+  let array = []
+  while(index < length){
+    array.push(str.substring(index,index+2));
+    index = index + 2;
+  }
+  val = array.join(",");
+  // 将16进制转化为ArrayBuffer
+  return new Uint8Array(val.match(/[\da-f]{2}/gi).map(function (h) {
+    return parseInt(h, 16)
+  })).buffer
+}
+
+/**
+ * 将ArrayBuffer转换成字符串
+ */
+function buf2hex(buffer) {
+  var hexArr = Array.prototype.map.call(
+    new Uint8Array(buffer),
+    function (bit) {
+      return ('00' + bit.toString(16)).slice(-2)
+    }
+  )
+  return hexArr.join('');
+}
+
 Page({
   data: {
     remind: '加载中',
@@ -106,7 +140,7 @@ Page({
               var ergodic_UUID = all_UUID[index].uuid; //取出服务里面的UUID
               var UUID_slice = ergodic_UUID.slice(4, 8); //截取4到8位
               /* 判断是否是我们需要的FFE0 */
-              if (UUID_slice == 'FFE0' || UUID_slice == 'ffe0') {
+              if (UUID_slice == 'FFB0' || UUID_slice == 'ffb0') {
                 var index_uuid = index;
                 that.setData({
                   serviceId: all_UUID[index_uuid].uuid //确定需要的服务UUID
@@ -114,13 +148,16 @@ Page({
               };
             };
             console.log('需要的服务UUID', that.data.serviceId)
-            that.Characteristics(); //调用获取特征值函数
+            that.GetCharacteristics(); //调用获取特征值函数
+            that.goToIndex();//跳转主页
           },
         });
       },
     })
   },
-  Characteristics: function() {
+
+  //获取特征值
+  GetCharacteristics: function() {
     var that = this;
     var device_characteristics = [];
     var characteristics_uuid = {};
@@ -138,7 +175,7 @@ Page({
           var characteristics_UUID = characteristics[index].uuid; //取出特征值里面的UUID
           var characteristics_slice = characteristics_UUID.slice(4, 8); //截取4到8位
           /* 判断是否是我们需要的FFE1 */
-          if (characteristics_slice == 'FFE1' || characteristics_slice == 'ffe1') {
+          if (characteristics_slice == 'FFB1' || characteristics_slice == 'ffb1') {
             var index_uuid = index;
             that.setData({
               characteristicsId: characteristics[index_uuid].uuid //确定的写入UUID
@@ -164,17 +201,21 @@ Page({
     }
     var value = value_ascii;
     console.log('转为Ascii码值', value);
-    var write_function = that.write(value); //调用数据发送函数
+    var write_function = that.writebuffer(value); //调用数据发送函数
   },
-  write: function(str) {
+   /* 写数据 */
+  writebuffer: function(str) {
     var that = this;
     var value = str;
     console.log('value', value);
     /* 将数值转为ArrayBuffer类型数据 */
+    /*
     var typedArray = new Uint8Array(value.match(/[\da-f]{2}/gi).map(function(h) {
       return parseInt(h, 16)
     }));
     var buffer = typedArray.buffer;
+    */
+    var buffer = string2buf(value);
     wx.writeBLECharacteristicValue({
       deviceId: that.data.deviceId,
       serviceId: that.data.serviceId,
@@ -233,6 +274,7 @@ Page({
   /**
    * 生命周期函数--监听页面卸载
    */
+  /*
   onUnload: function() {
     var that = this;
     wx.closeBLEConnection({
@@ -242,6 +284,7 @@ Page({
       }
     });
   },
+  */
 /*****************启动界面***************** */
   onReady: function() {
     var that = this;

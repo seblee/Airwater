@@ -33,7 +33,11 @@ App({
       }
     })
   },
+  //全局变量
   globalData: {
-    userInfo: null
+    userInfo: null,
+    g_BdeviceId : "",
+    g_BserviceId: "",
+    g_BcharacteristicId: "",
   }
 })
