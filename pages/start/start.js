@@ -191,9 +191,11 @@ Page({
   SendTap: function() {
     var that = this;
     var value_ascii = "";
-    var value_initial = "01"; //发送的信息
+    var value_initial = "FF010203"; //发送的信息
     console.log('输入框中的值', value_initial);
+    
     /* 以Ascii字符发送 */
+    /*
     var value_split = value_initial.split(''); //将字符一个一个分开
     console.log('value_split', value_split);
     for (var i = 0; i < value_split.length; i++) {
@@ -201,6 +203,8 @@ Page({
     }
     var value = value_ascii;
     console.log('转为Ascii码值', value);
+    */
+    var value = value_initial;
     var write_function = that.writebuffer(value); //调用数据发送函数
   },
    /* 写数据 */
