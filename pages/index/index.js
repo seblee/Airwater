@@ -41,12 +41,13 @@ Page({
     userInfo: {},
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
-    inputText: 'FF5A0103',
+    inputText: 'FFA50303010203B0',
     receiveText: '',
     name: '',
     deviceId: '',
-    serviceId: {},
-    characteristicsId: {},
+    serviceId: {}, 
+    writeWithoutResponseId: {},
+    readNotifyId: {},
     connected: true
   },
   //事件处理函数
@@ -129,7 +130,7 @@ bindSend: function () {
     })
     //监听数据
     wx.onBLECharacteristicValueChange(function (res) {
-      var receiveText = app.buf2hex(res.value)
+      var receiveText = buf2hex(res.value)
       console.log('接收到数据：' + receiveText)
       that.setData({
         receiveText: receiveText
@@ -160,18 +161,25 @@ bindSend: function () {
           if (characteristics_slice == 'FFB1' || characteristics_slice == 'ffb1') {
             var index_uuid = index;
             that.setData({
-              characteristicsId: characteristics[index_uuid].uuid //确定的写入UUID
+              writeWithoutResponseId: characteristics[index_uuid].uuid //确定的写入UUID
+            });
+          };
+          if (characteristics_slice == 'FFB2' || characteristics_slice == 'ffb2') {
+            var index_uuid = index;
+            that.setData({
+              readNotifyId: characteristics[index_uuid].uuid //确定的read UUID
             });
           };
         };
-        console.log('写入characteristicsId', that.data.characteristicsId);
+        console.log('readNotifyId', that.data.readNotifyId);
+        console.log('writeWithoutResponseId', that.data.writeWithoutResponseId);
         //that.SendTap(); //发送指令
         //启用notify
         wx.notifyBLECharacteristicValueChange({
           state: true,
           deviceId: that.data.deviceId,
           serviceId: that.data.serviceId,
-          characteristicId: that.data.characteristicsId,
+          characteristicId: that.data.readNotifyId,
           success: function (res) {
             console.log('启用notify成功'+ res.errMsg);
           },            
@@ -213,7 +221,7 @@ bindSend: function () {
     wx.writeBLECharacteristicValue({
       deviceId: that.data.deviceId,
       serviceId: that.data.serviceId,
-      characteristicId: that.data.characteristicsId,
+      characteristicId: that.data.writeWithoutResponseId,
       value: buffer,
       success: function(res) {
         console.log('数据发送成功', buffer,res);
@@ -229,7 +237,7 @@ bindSend: function () {
         wx.writeBLECharacteristicValue({
           deviceId: that.data.deviceId,
           serviceId: that.data.serviceId,
-          characteristicId: that.data.characteristicsId,
+          characteristicId: that.data.writeWithoutResponseId,
           value: buffer,
           success: function(res) {
             console.log('第2次数据发送成功', res);
@@ -245,7 +253,7 @@ bindSend: function () {
             wx.writeBLECharacteristicValue({
               deviceId: that.data.deviceId,
               serviceId: that.data.serviceId,
-              characteristicId: that.data.characteristicsId,
+              characteristicId: that.data.writeWithoutResponseId,
               value: buffer,
               success: function(res) {
                 console.log('第3次数据发送成功', res);
