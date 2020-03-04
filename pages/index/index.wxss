@@ -53,11 +53,18 @@
 }
 .str_var_Temp {
   color: white;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: normal;
   position: absolute;
   left: 300rpx;
-  top: 250rpx;
+  top: 320rpx;
   right: 0;
   bottom: 0;
+}
+
+.input {
+  margin-top:3px;
+  width: 100%;
+  border: 1px solid lightgray;
+  border-radius: 6px;
 }

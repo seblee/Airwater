@@ -3,10 +3,13 @@
     <image class='bg-img' mode='aspectFill' src="/images/Main.png" > </image>
 </view>
 <view class="container">
-    <view class="str_status">运行状态:</view>
     <view class="str_var_status">优</view>
     <view class="str_water-normal">常温水</view>
-    <button class="bluetooth_btn" type="default" size="mini" bindtap="bluetoothTap" >蓝牙</button>
     <button class='btn_Temp' type='default' size='mini' bindtap='btn_Temp_Add' id="{{item.poem_id}}">温度变化</button>
     <view class="str_var_Temp">{{var_Temp}}</view>
+    <text style="font-size:medium;margin-top:10px">发送内容：</text>
+  <input class="input" value="{{inputText}}" bindinput="bindInput" maxlength="20"/>
+  <text style="font-size:medium;margin-top:10px">接收内容：</text>
+  <input class="input" disabled value="{{receiveText}}" maxlength="20"/>
+    <button type="primary" class="button" bindtap="bindSend">发送</button>
 </view>
