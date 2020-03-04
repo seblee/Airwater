@@ -46,7 +46,8 @@ Page({
     name: '',
     deviceId: '',
     serviceId: {},
-    characteristicsId: {},
+    characteristicsId_w: {},
+    characteristicsId_r: {},
     connected: true
   },
   //事件处理函数
@@ -92,7 +93,7 @@ bindSend: function () {
   //页面启动进入
   onLoad: function () {
     var that = this
-    console.log(app.globalData.g_BdeviceId)
+    console.log("app.globalData.g_BdeviceId:",app.globalData.g_BdeviceId)
     that.setData({
       deviceId: app.globalData.g_BdeviceId
     })
@@ -120,6 +121,7 @@ bindSend: function () {
         that.GetCharacteristics(); //调用获取特征值函数
       },
     });
+
     //监听连接
     wx.onBLEConnectionStateChange(function (res) {
       console.log(res.connected)
@@ -127,6 +129,7 @@ bindSend: function () {
         connected: res.connected
       })
     })
+    
     //监听数据
     wx.onBLECharacteristicValueChange(function (res) {
       var receiveText = app.buf2hex(res.value)
@@ -156,22 +159,30 @@ bindSend: function () {
         for (var index = 0; index < characteristics_length; index++) {
           var characteristics_UUID = characteristics[index].uuid; //取出特征值里面的UUID
           var characteristics_slice = characteristics_UUID.slice(4, 8); //截取4到8位
-          /* 判断是否是我们需要的FFE1 */
+          /* 判断是否是我们需要的FFB1 */
           if (characteristics_slice == 'FFB1' || characteristics_slice == 'ffb1') {
             var index_uuid = index;
             that.setData({
-              characteristicsId: characteristics[index_uuid].uuid //确定的写入UUID
+              characteristicsId_w: characteristics[index_uuid].uuid //确定的写入UUID
+            });
+          };
+          /* 判断是否是我们需要的FFB2 */
+          if (characteristics_slice == 'FFB2' || characteristics_slice == 'ffb2') {
+            var index_uuid = index;
+            that.setData({
+              characteristicsId_r: characteristics[index_uuid].uuid //确定的写入UUID
             });
           };
         };
-        console.log('写入characteristicsId', that.data.characteristicsId);
+        console.log('写入characteristicsId', that.data.characteristicsId_w);
+        console.log('读取characteristicsId', that.data.characteristicsId_r);
         //that.SendTap(); //发送指令
         //启用notify
         wx.notifyBLECharacteristicValueChange({
           state: true,
           deviceId: that.data.deviceId,
           serviceId: that.data.serviceId,
-          characteristicId: that.data.characteristicsId,
+          characteristicId: that.data.characteristicsId_r,
           success: function (res) {
             console.log('启用notify成功'+ res.errMsg);
           },            
@@ -182,38 +193,19 @@ bindSend: function () {
       },
     })
   },
-  /* 发送指令 */
-  SendTap: function() {
-    var that = this;
-    var value_ascii = "";
-    var value_initial = "FF010203"; //发送的信息
-    console.log('输入框中的值', value_initial);
-    
-    /* 以Ascii字符发送 */
-    /*
-    var value_split = value_initial.split(''); //将字符一个一个分开
-    console.log('value_split', value_split);
-    for (var i = 0; i < value_split.length; i++) {
-      value_ascii = value_ascii + value_split[i].charCodeAt().toString(16); //转为Ascii字符后连接起
-    }
-    var value = value_ascii;
-    console.log('转为Ascii码值', value);
-    */
-    var value = value_initial;
-    var write_function = that.writebuffer(value); //调用数据发送函数
-  },
 
-    /* 写数据 */
+  /* 写数据 */
   writebuffer: function(str) {
     var that = this;
     var value = str;
+    var characteristicsId = that.data.characteristicsId_w;
     console.log('value', value);
     /* 将数值转为ArrayBuffer类型数据 */
     var buffer = string2buf(value);
     wx.writeBLECharacteristicValue({
       deviceId: that.data.deviceId,
       serviceId: that.data.serviceId,
-      characteristicId: that.data.characteristicsId,
+      characteristicId: characteristicsId,
       value: buffer,
       success: function(res) {
         console.log('数据发送成功', buffer,res);
@@ -229,7 +221,7 @@ bindSend: function () {
         wx.writeBLECharacteristicValue({
           deviceId: that.data.deviceId,
           serviceId: that.data.serviceId,
-          characteristicId: that.data.characteristicsId,
+          characteristicId: characteristicsId,
           value: buffer,
           success: function(res) {
             console.log('第2次数据发送成功', res);
@@ -245,7 +237,7 @@ bindSend: function () {
             wx.writeBLECharacteristicValue({
               deviceId: that.data.deviceId,
               serviceId: that.data.serviceId,
-              characteristicId: that.data.characteristicsId,
+              characteristicId: characteristicsId,
               value: buffer,
               success: function(res) {
                 console.log('第3次数据发送成功', res);
