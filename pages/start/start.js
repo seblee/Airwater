@@ -191,7 +191,7 @@ Page({
   SendTap: function() {
     var that = this;
     var value_ascii = "";
-    var value_initial = "FF010203"; //发送的信息
+    var value_initial = "FFA50303010203B0"; //发送的信息
     console.log('输入框中的值', value_initial);
     
     /* 以Ascii字符发送 */
