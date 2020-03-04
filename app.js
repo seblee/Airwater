@@ -1,5 +1,16 @@
 //app.js
 App({
+
+  //======全局变量====== 
+  globalData: {
+    userInfo: null,
+    g_BdeviceId : "",
+    g_BserviceId: "",
+    g_BcharacteristicId: "",
+  },
+  //======应用程序全局方法======
+
+  //======生命周期方法======
   onLaunch: function () {
     // 展示本地存储能力
     var logs = wx.getStorageSync('logs') || []
@@ -33,11 +44,54 @@ App({
       }
     })
   },
-  //全局变量
-  globalData: {
-    userInfo: null,
-    g_BdeviceId : "",
-    g_BserviceId: "",
-    g_BcharacteristicId: "",
-  }
+
+  /**
+   * 生命周期函数--监听页面初次渲染完成
+   */
+  onReady: function () {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow: function () {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide: function () {
+    var that = this
+    console.log("g_BdeviceId:",that.globalData.g_BdeviceId);
+    var deviceId=that.globalData.g_BdeviceId;
+    wx.closeBLEConnection({
+      deviceId: deviceId,
+      success: function(res) {
+        console.log('断开设备连接', res);
+      }
+    });
+  },
+  /**
+ * 生命周期函数--错误
+ */ 
+  onError (msg) {
+    console.log(msg)
+  },
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload: function() {
+    var that = this
+    console.log("g_BdeviceId:",that.globalData.g_BdeviceId);
+    var deviceId=that.globalData.g_BdeviceId;
+    wx.closeBLEConnection({
+      deviceId: deviceId,
+      success: function(res) {
+        console.log('断开设备连接', res);
+      }
+    });
+  },
+
 })

@@ -46,7 +46,6 @@ Page({
               allowDuplicatesKey: false,
               success: function (res) {
                 console.log('这里是开始搜索附近设备', res);
-                console.log('deviceName', deviceName);
                 //添加延迟
                 setTimeout(() => {
                   wx.getBluetoothDevices({
@@ -55,11 +54,10 @@ Page({
                       //在搜索到的所有蓝牙中找到需要连接的那一个蓝牙
                       for (var i = 0; i < res.devices.length; i++) {
                         if (res.devices[i].name == deviceName) {
-                          //if (res.devices[i].name == that.data.inputValue) {
                           that.setData({
                             deviceId: res.devices[i].deviceId,
                           })
-                          console.log(res.devices[i].deviceId)
+                          console.log("deviceId:",res.devices[i].deviceId)
                           wx.hideLoading();
                           /* 连接中动画 */
                           wx.showLoading({
@@ -83,10 +81,10 @@ Page({
   },
 
   //连接蓝牙
-  CreateBLEConnection: function () {
+  CreateBLEConnection: function() {   
     var that = this;
     wx.stopBluetoothDevicesDiscovery({
-      success: function (res) {
+      success: function(res) {
         console.log('停止搜索设备', res)
       }
     })
@@ -102,8 +100,8 @@ Page({
           duration: 1000
         })
         //全局变量
-        app.globalData.g_BdeviceId = that.data.deviceId,
-          that.goToIndex();//跳转主页
+        app.globalData.g_BdeviceId=that.data.deviceId,
+        that.goToIndex();//跳转主页
       },
       fail: function (res) {
         console.log(res)
@@ -182,7 +180,7 @@ Page({
       that.setData({
         remind: ''
       });
-    }, 500);
+    }, 100);
 
     wx.onAccelerometerChange(function (res) {
       var angle = -(res.x * 30).toFixed(1);
@@ -198,4 +196,5 @@ Page({
       }
     });
   },
+
 })
