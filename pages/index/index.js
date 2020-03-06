@@ -93,6 +93,7 @@ bindSend: function () {
   //页面启动进入
   onLoad: function () {
     var that = this
+    console.log('index页面onLoad');
     console.log("app.globalData.g_BdeviceId:",app.globalData.g_BdeviceId)
     that.setData({
       deviceId: app.globalData.g_BdeviceId
@@ -129,10 +130,10 @@ bindSend: function () {
         connected: res.connected
       })
     })
-    
+
     //监听数据
     wx.onBLECharacteristicValueChange(function (res) {
-      var receiveText = app.buf2hex(res.value)
+      var receiveText = buf2hex(res.value)
       console.log('接收到数据：' + receiveText)
       that.setData({
         receiveText: receiveText

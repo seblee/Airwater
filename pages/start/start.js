@@ -20,6 +20,7 @@ Page({
   },
 
   onLoad: function(options) {
+    console.log('start页面onLoad');
     wx.showLoading({
       title: '请打开蓝牙',
     });
@@ -101,6 +102,7 @@ Page({
         })
         //全局变量
         app.globalData.g_BdeviceId=that.data.deviceId,
+        app.setStorage_ID();//存储deviceId
         that.goToIndex();//跳转主页
       },
       fail: function (res) {

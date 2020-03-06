@@ -9,9 +9,34 @@ App({
     g_BcharacteristicId: "",
   },
   //======应用程序全局方法======
+  //关闭蓝牙连接
+  closeBLEConnection: function() {
+    var that = this
+    console.log("g_BdeviceId:",that.globalData.g_BdeviceId);
+    var deviceId=that.globalData.g_BdeviceId;
+    wx.closeBLEConnection({
+      deviceId: deviceId,
+      success: function(res) {
+        console.log('断开设备连接', res);
+      }
+    });    
+  },
+  //存储ID
+  setStorage_ID: function() {
+    var that = this
+    console.log("setStorage_ID:",that.globalData.g_BdeviceId);
+    wx.setStorageSync('g_BdeviceId', that.globalData.g_BdeviceId);  
+  },
+  //获取ID
+  getStorage_ID: function() {
+    var that = this
+    that.globalData.g_BdeviceId=wx.getStorageSync('g_BdeviceId');  
+    console.log("getStorage_ID:",that.globalData.g_BdeviceId);
+  },
 
   //======生命周期方法======
   onLaunch: function () {
+    console.log('onLaunch');
     // 展示本地存储能力
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
@@ -49,29 +74,24 @@ App({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-
+    console.log('onReady');
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    console.log('onShow');
   },
 
   /**
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
+
+    console.log('onHide');
     var that = this
-    console.log("g_BdeviceId:",that.globalData.g_BdeviceId);
-    var deviceId=that.globalData.g_BdeviceId;
-    wx.closeBLEConnection({
-      deviceId: deviceId,
-      success: function(res) {
-        console.log('断开设备连接', res);
-      }
-    });
+    //that.closeBLEConnection();//关闭蓝牙连接
   },
   /**
  * 生命周期函数--错误
@@ -83,15 +103,9 @@ App({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function() {
+    console.log('onHide');
     var that = this
-    console.log("g_BdeviceId:",that.globalData.g_BdeviceId);
-    var deviceId=that.globalData.g_BdeviceId;
-    wx.closeBLEConnection({
-      deviceId: deviceId,
-      success: function(res) {
-        console.log('断开设备连接', res);
-      }
-    });
+    that.closeBLEConnection();//关闭蓝牙连接
   },
 
 })
