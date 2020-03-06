@@ -41,8 +41,8 @@ Page({
     userInfo: {},
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
-    inputText: 'FF5A0103',
-    receiveText: '',
+    inputText: 'FFA50303010203B0',
+    receiveText: [ ],
     name: '',
     deviceId: '',
     serviceId: {},
@@ -133,11 +133,15 @@ bindSend: function () {
 
     //监听数据
     wx.onBLECharacteristicValueChange(function (res) {
-      var receiveText = buf2hex(res.value)
-      console.log('接收到数据：' + receiveText)
+      var receive = buf2hex(res.value)
+      console.log('接收到数据：' + receive)
+      
+      const length = that.data.receiveText.length
+      that.data.receiveText = [{id:length, data:receive}].concat(that.data.receiveText)
       that.setData({
-        receiveText: receiveText
+        receiveText: that.data.receiveText
       })
+
     })
 
   },

@@ -9,7 +9,11 @@
     <view class="str_var_Temp">{{var_Temp}}</view>
     <text style="font-size:medium;margin-top:10px">发送内容：</text>
   <input class="input" value="{{inputText}}" bindinput="bindInput" maxlength="20"/>
-  <text style="font-size:medium;margin-top:10px">接收内容：</text>
-  <input class="input" disabled value="{{receiveText}}" maxlength="20"/>
-    <button type="primary" class="button" bindtap="bindSend">发送</button>
+    <button type="primary" class="button" bindtap="bindSend">发送</button> 
+    <text style="font-size:medium;margin-top:10px">接收内容：</text>
+    <view wx:for="{{receiveText}}" wx:for-index="idx" wx:for-item="item" style="font-size:medium;margin-top:10px">
+      {{item.id}}:{{item.data}}
+    </view>
+ 
+
 </view>

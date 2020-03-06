@@ -10,10 +10,10 @@ Page({
     moto: '设备配对中，请稍后！',
     deviceId: '',
     deviceName: "",
-    inputValue: '66:00:0A:0B:02:08', 
+    inputValue: '66:00:0A:0B:02:08',
   },
- //事件处理函数，跳转主页 
-  goToIndex: function() {
+  //事件处理函数，跳转主页 
+  goToIndex: function () {
     wx.switchTab({
       url: '/pages/index/index',
     });
@@ -33,11 +33,11 @@ Page({
 
     var deviceName = options.id;
     wx.closeBluetoothAdapter({
-      success: function(res) {
+      success: function (res) {
         console.log('关闭蓝牙模块');
         /* 初始化蓝牙适配器 */
         wx.openBluetoothAdapter({
-          success: function(res) {
+          success: function (res) {
             console.log('初始化蓝牙适配器成功');
             wx.hideLoading();
             wx.showLoading({
@@ -45,12 +45,12 @@ Page({
             });
             wx.startBluetoothDevicesDiscovery({
               allowDuplicatesKey: false,
-              success: function(res) {
+              success: function (res) {
                 console.log('这里是开始搜索附近设备', res);
                 //添加延迟
                 setTimeout(() => {
                   wx.getBluetoothDevices({
-                    success: function(res) {
+                    success: function (res) {
                       console.log(res);
                       //在搜索到的所有蓝牙中找到需要连接的那一个蓝牙
                       for (var i = 0; i < res.devices.length; i++) {
@@ -68,7 +68,7 @@ Page({
                         }
                       }
                     },
-                    fail: function() {
+                    fail: function () {
                       console.log("搜索蓝牙设备失败")
                     }
                   });
@@ -175,16 +175,16 @@ Page({
     });
   },
   */
-/*****************启动界面***************** */
-  onReady: function() {
+  /*****************启动界面***************** */
+  onReady: function () {
     var that = this;
-    setTimeout(function() {
+    setTimeout(function () {
       that.setData({
         remind: ''
       });
     }, 100);
 
-    wx.onAccelerometerChange(function(res) {
+    wx.onAccelerometerChange(function (res) {
       var angle = -(res.x * 30).toFixed(1);
       if (angle > 14) {
         angle = 14;
