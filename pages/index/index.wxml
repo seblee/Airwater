@@ -5,15 +5,16 @@
 <view class="container">
     <view class="str_var_status">优</view>
     <view class="str_water-normal">常温水</view>
-    <button class='btn_Temp' type='default' size='mini' bindtap='btn_Temp_Add' id="{{item.poem_id}}">温度变化</button>
-    <view class="str_var_Temp">{{var_Temp}}</view>
+    <view class="State_Humidity">{{State.Humidity}}</view>
+    <view class="State_Temperture">{{State.Temperture}}</view>
     <text style="font-size:medium;margin-top:10px">发送内容：</text>
-  <input class="input" value="{{inputText}}" bindinput="bindInput" maxlength="20"/>
+    <input class="input" value="{{inputText}}" bindinput="bindInput" maxlength="20"/>
     <button type="primary" class="button" bindtap="bindSend">发送</button> 
     <text style="font-size:medium;margin-top:10px">接收内容：</text>
-    <view wx:for="{{receiveText}}" wx:for-index="idx" wx:for-item="item" style="font-size:medium;margin-top:10px">
-      {{item.id}}:{{item.data}}
-    </view>
- 
-
+    <input class="input" disabled value="{{receiveText}}" maxlength="40"/>
+    
+    <button class='Normalbtn' bindtap='OutNormal' plain="true" >
+    <image class='Normalpic'src="/images/icon/Normal.png" > </image>
+    </button>
 </view>
+

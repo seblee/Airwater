@@ -39,19 +39,17 @@
   text-align: center;
 }
 
-.btn_Temp {
-  color: darkgreen;
-  font-size: 20px;
+.State_Humidity {
+  color: white;
+  font-size: 13px;
   font-weight: normal;
   position: absolute;
-  left: 50rpx;
-  top: 700rpx;
-  right: 100;
-  bottom: 300;
-  margin: auto;
-  text-align: center;
+  left: 100rpx;
+  top: 320rpx;
+  right: 0;
+  bottom: 0;
 }
-.str_var_Temp {
+.State_Temperture {
   color: white;
   font-size: 13px;
   font-weight: normal;
@@ -63,8 +61,24 @@
 }
 
 .input {
-  margin-top:3px;
+  margin-top:3rpx;
   width: 100%;
   border: 1px solid lightgray;
   border-radius: 6px;
 }
+
+.Normalpic{
+  margin-top:60rpx;
+  width: 300rpx;
+  height: 300rpx;
+  border: none;
+}
+button::before {
+  border: 0;
+  border: none;
+}
+button::after {
+  border: 0;
+  border: none;
+}
+

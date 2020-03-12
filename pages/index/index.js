@@ -37,18 +37,27 @@ function buf2hex(buffer) {
 
 Page({
   data: {
-    var_Temp:20,
     userInfo: {},
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
+    //状态显示变量
+    State:{
+          Temperture:23 ,//温度
+          Humidity: 50 ,//湿度
+          WaterLevel: 0 ,//水位
+          WaterMake: 0 ,//制水
+          Fan: 0 ,//风机
+    },
     inputText: 'FFA50303010203B0',
-    receiveText: [ ],
+    receiveText: '',
+    //receiveText: [ ],
     name: '',
     deviceId: '',
     serviceId: {},
     characteristicsId_w: {},
     characteristicsId_r: {},
     connected: true
+
   },
   //事件处理函数
   bindViewTap: function () {
@@ -56,12 +65,7 @@ Page({
       url: '../logs/logs'
     })
   },
-    //事件处理函数,按钮测试
-  btn_Temp_Add:function(){
-   this.setData({
-      var_Temp:23
-    })
-  },
+
 //输入框
 bindInput: function (e) {
     this.setData({
@@ -72,6 +76,11 @@ bindInput: function (e) {
 //按键发送
 bindSend: function () {
     var that = this
+    console.log('按键发送bindSend');    
+    this.setData({
+      'State.Humidity':55 ,
+      'State.Temperture':23 ,
+    })
     if (that.data.connected) {
 
       that.writebuffer(that.data.inputText); //调用数据发送函数
@@ -133,18 +142,62 @@ bindSend: function () {
 
     //监听数据
     wx.onBLECharacteristicValueChange(function (res) {
-      var receive = buf2hex(res.value)
-      console.log('接收到数据：' + receive)
-      
+
+      var receiveText = buf2hex(res.value)
+
+      console.log('接收到数据：' + receiveText)
+      that.setData({
+        receiveText: receiveText
+      })
+      that.receiveService();//接收数据解析
+      /*
       const length = that.data.receiveText.length
       that.data.receiveText = [{id:length, data:receive}].concat(that.data.receiveText)
       that.setData({
         receiveText: that.data.receiveText
       })
-
+      <view wx:for="{{receiveText}}" wx:for-index="idx" wx:for-item="item" style="font-size:medium;margin-top:10px">
+      {{item.id}}:{{item.data}}
+      </view>
+    */
     })
 
   },
+//
+//protocol
+//接收数据解析
+receiveService:function(){
+  var that = this;
+  var length ;
+  var Checksum = 0 ;
+  var i ;
+  var buff=0 ;
+
+  var buffer = string2buf(that.data.receiveText);
+  console.log('接收数据解析', buffer);
+  console.log('数据buffer[0]：', buffer[0]);      
+  if(buffer[0]==0xFF){//帧头
+    buff|=0x01;
+    if(buffer[1]==0xA5){   
+      buff|=0x02;   
+      if((buffer[2]==0x01)||(buffer[2]==0x02)||(buffer[2]==0x03)){//功能码
+        length=buffer[3];
+        buff|=0x04;
+        for(i=0;i<length+4;i++){
+          Checksum +=buffer[i];
+        }
+        console.log('校验和：', Checksum);     
+        if(Checksum==buffer[length+4]) 
+        {
+          buff|=0x08;
+          console.log('接收数据帧正确：', that.data.receiveText);          
+        }
+      } 
+    }     
+  };
+  console.log('数据判断：', buff);   
+},
+
 
   //获取特征值
   GetCharacteristics: function() {
@@ -198,6 +251,7 @@ bindSend: function () {
       },
     })
   },
+
 
   /* 写数据 */
   writebuffer: function(str) {
