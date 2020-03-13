@@ -13,7 +13,7 @@
     <text style="font-size:medium;margin-top:10px">接收内容：</text>
     <input class="input" disabled value="{{receiveText}}" maxlength="40"/>
     
-    <button class='Normalbtn' bindtap='OutNormal' plain="true" >
+    <button class='Normalbtn' bindtap='outNormal' plain="true" >
     <image class='Normalpic'src="/images/icon/Normal.png" > </image>
     </button>
 </view>

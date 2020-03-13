@@ -10,7 +10,7 @@ Page({
     moto: '设备配对中，请稍后！',
     deviceId: '',
     deviceName: "",
-    inputValue: '66:00:0A:0B:02:08',
+    inputValue: '66:00:0A:0B:02:0A',
   },
   //事件处理函数，跳转主页 
   goToIndex: function () {
@@ -20,18 +20,30 @@ Page({
   },
 
   onLoad: function(options) {
+    var that = this;
+
     console.log('start页面onLoad');
     wx.showLoading({
       title: '请打开蓝牙',
     });
     console.log(options.id);
-    this.setData({
-      deviceName: options.id,
-    });
-    console.log('设备的Name', this.data.deviceName);
-    var that = this;
+    if(options.id){
+      this.setData({
+        deviceName: options.id,
+      });
+      console.log('设备options.id', options.id);
+    }
+    else{
+      app.getStorage_ID();//获取ID
+      this.setData({
+        deviceName: app.globalData.g_BdeviceId,
+      });
+      console.log('设备g_BdeviceId', this.data.deviceName);
+    }
 
-    var deviceName = options.id;
+    var deviceName = this.data.deviceName;
+    console.log('设备的Name', deviceName);
+
     wx.closeBluetoothAdapter({
       success: function (res) {
         console.log('关闭蓝牙模块');

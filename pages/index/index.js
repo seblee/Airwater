@@ -1,39 +1,6 @@
 //index.js
 //获取应用实例
-const app = getApp()
-
-/**
-* 将字符串转换成ArrayBufer
-*/
-function string2buf(str) {
-  let val = ""
-  if(!str) return;
-  let length = str.length;
-  let index = 0;
-  let array = []
-  while(index < length){
-    array.push(str.substring(index,index+2));
-    index = index + 2;
-  }
-  val = array.join(",");
-  // 将16进制转化为ArrayBuffer
-  return new Uint8Array(val.match(/[\da-f]{2}/gi).map(function (h) {
-    return parseInt(h, 16)
-  })).buffer
-}
-
-/**
- * 将ArrayBuffer转换成字符串
- */
-function buf2hex(buffer) {
-  var hexArr = Array.prototype.map.call(
-    new Uint8Array(buffer),
-    function (bit) {
-      return ('00' + bit.toString(16)).slice(-2)
-    }
-  )
-  return hexArr.join('');
-}
+var app = getApp()
 
 Page({
   data: {
@@ -42,6 +9,7 @@ Page({
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     //状态显示变量
     State:{
+          runState: 0 ,//运行状态
           Temperture:23 ,//温度
           Humidity: 50 ,//湿度
           WaterLevel: 0 ,//水位
@@ -50,7 +18,6 @@ Page({
     },
     inputText: 'FFA50303010203B0',
     receiveText: '',
-    //receiveText: [ ],
     name: '',
     deviceId: '',
     serviceId: {},
@@ -83,7 +50,7 @@ bindSend: function () {
     })
     if (that.data.connected) {
 
-      that.writebuffer(that.data.inputText); //调用数据发送函数
+      app.writeBuffer(that.data.inputText); //调用数据发送函数
     }
     else {
       wx.showModal({
@@ -98,6 +65,27 @@ bindSend: function () {
       })
     }
   },
+//出常温水
+outNormal: function () {
+  var that = this
+  console.log('出常温水outNormal');    
+
+  if (that.data.connected) {
+    app.writePack(app.globalData.txConfig.CoNormalWater.id,app.globalData.txConfig.CoNormalWater.value);//调用数据发送函数
+  }
+  else {
+    wx.showModal({
+      title: '提示',
+      content: '蓝牙已断开',
+      showCancel: false,
+      success: function (res) {
+        that.setData({
+          searching: false
+        })
+      }
+    })
+  }
+},
 
   //页面启动进入
   onLoad: function () {
@@ -125,6 +113,7 @@ bindSend: function () {
             that.setData({
               serviceId: all_UUID[index_uuid].uuid //确定需要的服务UUID
             });
+            app.globalData.g_BserviceId=that.data.serviceId;
           };
         };
         console.log('需要的服务UUID', that.data.serviceId)
@@ -143,7 +132,7 @@ bindSend: function () {
     //监听数据
     wx.onBLECharacteristicValueChange(function (res) {
 
-      var receiveText = buf2hex(res.value)
+      var receiveText = app.buf2hex(res.value)
 
       console.log('接收到数据：' + receiveText)
       that.setData({
@@ -163,39 +152,63 @@ bindSend: function () {
     })
 
   },
-//
+//主页面数据刷新
+homeDisplay:function(){
+
+  console.log('主页面数据刷新')
+  this.setData({
+    'State.Humidity':app.globalData.rcvState.StHumidity.value[0]/10 ,
+    'State.Temperture':app.globalData.rcvState.StAlarm1.value[5]/10,
+  })
+},
 //protocol
 //接收数据解析
 receiveService:function(){
   var that = this;
   var length ;
-  var Checksum = 0 ;
+  var checksum = 0 ;
+  var address = 0 ;
   var i ;
-  var buff=0 ;
 
-  var buffer = string2buf(that.data.receiveText);
-  console.log('接收数据解析', buffer);
-  console.log('数据buffer[0]：', buffer[0]);      
+  var receiveValue = app.string2buf(that.data.receiveText);
+  var buffer = new Uint8Array(receiveValue); 
   if(buffer[0]==0xFF){//帧头
-    buff|=0x01;
-    if(buffer[1]==0xA5){   
-      buff|=0x02;   
+    if(buffer[1]==0xA5){     
       if((buffer[2]==0x01)||(buffer[2]==0x02)||(buffer[2]==0x03)){//功能码
         length=buffer[3];
-        buff|=0x04;
         for(i=0;i<length+4;i++){
-          Checksum +=buffer[i];
+          checksum +=buffer[i];
         }
-        console.log('校验和：', Checksum);     
-        if(Checksum==buffer[length+4]) 
-        {
-          buff|=0x08;
-          console.log('接收数据帧正确：', that.data.receiveText);          
+        checksum &= 0xFF;//校验和低位
+        if(checksum==buffer[length+4]) {
+          console.log('接收数据帧正确：', buffer); 
+          address=buffer[4]<<8|buffer[5];//地址
+          switch(address){
+            case app.globalData.rcvState.StAlarm1.id :
+            {
+              var u8buffer=buffer.slice(6,18);
+              app.globalData.rcvState.StAlarm1.value=app.u8ToU16(u8buffer);
+              console.log('数据帧StAlarm1：', app.globalData.rcvState.StAlarm1.value);      
+            }
+              break;
+            case app.globalData.rcvState.StHumidity.id :
+            {
+              var u8buffer=buffer.slice(6,18);
+              app.globalData.rcvState.StHumidity.value=app.u8ToU16(u8buffer);
+              console.log('数据帧StHumidity：', app.globalData.rcvState.StHumidity.value);      
+            }
+              break;
+            default:
+              break;
+          }
+          that.homeDisplay();
+        }
+        else{
+          console.log('数据校验错误：', buffer);                
         }
       } 
     }     
   };
-  console.log('数据判断：', buff);   
 },
 
 
@@ -221,8 +234,9 @@ receiveService:function(){
           if (characteristics_slice == 'FFB1' || characteristics_slice == 'ffb1') {
             var index_uuid = index;
             that.setData({
-              characteristicsId_w: characteristics[index_uuid].uuid //确定的写入UUID
+              characteristicsId_w: characteristics[index_uuid].uuid, //确定的写入UUID
             });
+            app.globalData.g_BcharacteristicId=that.data.characteristicsId_w;
           };
           /* 判断是否是我们需要的FFB2 */
           if (characteristics_slice == 'FFB2' || characteristics_slice == 'ffb2') {
@@ -253,67 +267,6 @@ receiveService:function(){
   },
 
 
-  /* 写数据 */
-  writebuffer: function(str) {
-    var that = this;
-    var value = str;
-    var characteristicsId = that.data.characteristicsId_w;
-    console.log('value', value);
-    /* 将数值转为ArrayBuffer类型数据 */
-    var buffer = string2buf(value);
-    wx.writeBLECharacteristicValue({
-      deviceId: that.data.deviceId,
-      serviceId: that.data.serviceId,
-      characteristicId: characteristicsId,
-      value: buffer,
-      success: function(res) {
-        console.log('数据发送成功', buffer,res);
-        wx.showToast({
-          title: '发送成功',
-          icon: 'success',
-          duration: 2000
-        })
-      },
-      fail: function(res) {
-        console.log('调用失败', res);
-        /* 调用失败时，再次调用 */
-        wx.writeBLECharacteristicValue({
-          deviceId: that.data.deviceId,
-          serviceId: that.data.serviceId,
-          characteristicId: characteristicsId,
-          value: buffer,
-          success: function(res) {
-            console.log('第2次数据发送成功', res);
-            wx.showToast({
-              title: '发送成功',
-              icon: 'success',
-              duration: 2000
-            })
-          },
-          fail: function(res) {
-            console.log('第2次调用失败', res);
-            /* 调用失败时，再次调用 */
-            wx.writeBLECharacteristicValue({
-              deviceId: that.data.deviceId,
-              serviceId: that.data.serviceId,
-              characteristicId: characteristicsId,
-              value: buffer,
-              success: function(res) {
-                console.log('第3次数据发送成功', res);
-                wx.showToast({
-                  title: '发送成功',
-                  icon: 'success',
-                  duration: 2000
-                })
-              },
-              fail: function(res) {
-                console.log('第3次调用失败', res);
-              }
-            });
-          }
-        });
-      }
-    });
-  },
+
 
 })
