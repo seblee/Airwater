@@ -1,54 +1,30 @@
 //index.js
 //获取应用实例
-const app = getApp()
-
-/**
-* 将字符串转换成ArrayBufer
-*/
-function string2buf(str) {
-  let val = ""
-  if(!str) return;
-  let length = str.length;
-  let index = 0;
-  let array = []
-  while(index < length){
-    array.push(str.substring(index,index+2));
-    index = index + 2;
-  }
-  val = array.join(",");
-  // 将16进制转化为ArrayBuffer
-  return new Uint8Array(val.match(/[\da-f]{2}/gi).map(function (h) {
-    return parseInt(h, 16)
-  })).buffer
-}
-
-/**
- * 将ArrayBuffer转换成字符串
- */
-function buf2hex(buffer) {
-  var hexArr = Array.prototype.map.call(
-    new Uint8Array(buffer),
-    function (bit) {
-      return ('00' + bit.toString(16)).slice(-2)
-    }
-  )
-  return hexArr.join('');
-}
+var app = getApp()
 
 Page({
   data: {
-    var_Temp:20,
     userInfo: {},
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
+    //状态显示变量
+    State:{
+          runState: 0 ,//运行状态
+          Temperture:23 ,//温度
+          Humidity: 50 ,//湿度
+          WaterLevel: 0 ,//水位
+          WaterMake: 0 ,//制水
+          Fan: 0 ,//风机
+    },
     inputText: 'FFA50303010203B0',
-    receiveText: [ ],
+    receiveText: '',
     name: '',
     deviceId: '',
     serviceId: {},
     characteristicsId_w: {},
     characteristicsId_r: {},
     connected: true
+
   },
   //事件处理函数
   bindViewTap: function () {
@@ -56,12 +32,7 @@ Page({
       url: '../logs/logs'
     })
   },
-    //事件处理函数,按钮测试
-  btn_Temp_Add:function(){
-   this.setData({
-      var_Temp:23
-    })
-  },
+
 //输入框
 bindInput: function (e) {
     this.setData({
@@ -72,9 +43,14 @@ bindInput: function (e) {
 //按键发送
 bindSend: function () {
     var that = this
+    console.log('按键发送bindSend');    
+    this.setData({
+      'State.Humidity':55 ,
+      'State.Temperture':23 ,
+    })
     if (that.data.connected) {
 
-      that.writebuffer(that.data.inputText); //调用数据发送函数
+      app.writeBuffer(that.data.inputText); //调用数据发送函数
     }
     else {
       wx.showModal({
@@ -89,10 +65,32 @@ bindSend: function () {
       })
     }
   },
+//出常温水
+outNormal: function () {
+  var that = this
+  console.log('出常温水outNormal');    
+
+  if (that.data.connected) {
+    app.writePack(app.globalData.txConfig.CoNormalWater.id,app.globalData.txConfig.CoNormalWater.value);//调用数据发送函数
+  }
+  else {
+    wx.showModal({
+      title: '提示',
+      content: '蓝牙已断开',
+      showCancel: false,
+      success: function (res) {
+        that.setData({
+          searching: false
+        })
+      }
+    })
+  }
+},
 
   //页面启动进入
   onLoad: function () {
     var that = this
+    console.log('index页面onLoad');
     console.log("app.globalData.g_BdeviceId:",app.globalData.g_BdeviceId)
     that.setData({
       deviceId: app.globalData.g_BdeviceId
@@ -115,6 +113,7 @@ bindSend: function () {
             that.setData({
               serviceId: all_UUID[index_uuid].uuid //确定需要的服务UUID
             });
+            app.globalData.g_BserviceId=that.data.serviceId;
           };
         };
         console.log('需要的服务UUID', that.data.serviceId)
@@ -129,21 +128,89 @@ bindSend: function () {
         connected: res.connected
       })
     })
-    
+
     //监听数据
     wx.onBLECharacteristicValueChange(function (res) {
-      var receive = buf2hex(res.value)
-      console.log('接收到数据：' + receive)
-      
+
+      var receiveText = app.buf2hex(res.value)
+
+      console.log('接收到数据：' + receiveText)
+      that.setData({
+        receiveText: that.data.receiveText
+      })
+      that.receiveService();//接收数据解析
+      /*
       const length = that.data.receiveText.length
       that.data.receiveText = [{id:length, data:receive}].concat(that.data.receiveText)
       that.setData({
         receiveText: that.data.receiveText
       })
-
+      <view wx:for="{{receiveText}}" wx:for-index="idx" wx:for-item="item" style="font-size:medium;margin-top:10px">
+      {{item.id}}:{{item.data}}
+      </view>
+    */
     })
 
   },
+//主页面数据刷新
+homeDisplay:function(){
+
+  console.log('主页面数据刷新')
+  this.setData({
+    'State.Humidity':app.globalData.rcvState.StHumidity.value[0]/10 ,
+    'State.Temperture':app.globalData.rcvState.StAlarm1.value[5]/10,
+  })
+},
+//protocol
+//接收数据解析
+receiveService:function(){
+  var that = this;
+  var length ;
+  var checksum = 0 ;
+  var address = 0 ;
+  var i ;
+
+  var receiveValue = app.string2buf(that.data.receiveText);
+  var buffer = new Uint8Array(receiveValue); 
+  if(buffer[0]==0xFF){//帧头
+    if(buffer[1]==0xA5){     
+      if((buffer[2]==0x01)||(buffer[2]==0x02)||(buffer[2]==0x03)){//功能码
+        length=buffer[3];
+        for(i=0;i<length+4;i++){
+          checksum +=buffer[i];
+        }
+        checksum &= 0xFF;//校验和低位
+        if(checksum==buffer[length+4]) {
+          console.log('接收数据帧正确：', buffer); 
+          address=buffer[4]<<8|buffer[5];//地址
+          switch(address){
+            case app.globalData.rcvState.StAlarm1.id :
+            {
+              var u8buffer=buffer.slice(6,18);
+              app.globalData.rcvState.StAlarm1.value=app.u8ToU16(u8buffer);
+              console.log('数据帧StAlarm1：', app.globalData.rcvState.StAlarm1.value);      
+            }
+              break;
+            case app.globalData.rcvState.StHumidity.id :
+            {
+              var u8buffer=buffer.slice(6,18);
+              app.globalData.rcvState.StHumidity.value=app.u8ToU16(u8buffer);
+              console.log('数据帧StHumidity：', app.globalData.rcvState.StHumidity.value);      
+            }
+              break;
+            default:
+              break;
+          }
+          that.homeDisplay();
+        }
+        else{
+          console.log('数据校验错误：', buffer);                
+        }
+      } 
+    }     
+  };
+},
+
 
   //获取特征值
   GetCharacteristics: function() {
@@ -167,8 +234,9 @@ bindSend: function () {
           if (characteristics_slice == 'FFB1' || characteristics_slice == 'ffb1') {
             var index_uuid = index;
             that.setData({
-              characteristicsId_w: characteristics[index_uuid].uuid //确定的写入UUID
+              characteristicsId_w: characteristics[index_uuid].uuid, //确定的写入UUID
             });
+            app.globalData.g_BcharacteristicId=that.data.characteristicsId_w;
           };
           /* 判断是否是我们需要的FFB2 */
           if (characteristics_slice == 'FFB2' || characteristics_slice == 'ffb2') {
@@ -198,67 +266,7 @@ bindSend: function () {
     })
   },
 
-  /* 写数据 */
-  writebuffer: function(str) {
-    var that = this;
-    var value = str;
-    var characteristicsId = that.data.characteristicsId_w;
-    console.log('value', value);
-    /* 将数值转为ArrayBuffer类型数据 */
-    var buffer = string2buf(value);
-    wx.writeBLECharacteristicValue({
-      deviceId: that.data.deviceId,
-      serviceId: that.data.serviceId,
-      characteristicId: characteristicsId,
-      value: buffer,
-      success: function(res) {
-        console.log('数据发送成功', buffer,res);
-        wx.showToast({
-          title: '发送成功',
-          icon: 'success',
-          duration: 2000
-        })
-      },
-      fail: function(res) {
-        console.log('调用失败', res);
-        /* 调用失败时，再次调用 */
-        wx.writeBLECharacteristicValue({
-          deviceId: that.data.deviceId,
-          serviceId: that.data.serviceId,
-          characteristicId: characteristicsId,
-          value: buffer,
-          success: function(res) {
-            console.log('第2次数据发送成功', res);
-            wx.showToast({
-              title: '发送成功',
-              icon: 'success',
-              duration: 2000
-            })
-          },
-          fail: function(res) {
-            console.log('第2次调用失败', res);
-            /* 调用失败时，再次调用 */
-            wx.writeBLECharacteristicValue({
-              deviceId: that.data.deviceId,
-              serviceId: that.data.serviceId,
-              characteristicId: characteristicsId,
-              value: buffer,
-              success: function(res) {
-                console.log('第3次数据发送成功', res);
-                wx.showToast({
-                  title: '发送成功',
-                  icon: 'success',
-                  duration: 2000
-                })
-              },
-              fail: function(res) {
-                console.log('第3次调用失败', res);
-              }
-            });
-          }
-        });
-      }
-    });
-  },
+
+
 
 })
