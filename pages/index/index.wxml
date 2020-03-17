@@ -1,20 +1,66 @@
-<!--index.wxml-->
-<view class="imagesize">
-    <image class='bg-img' mode='aspectFill' src="/images/Main.png" > </image>
-</view>
-<view class="container">
-    <view class="str_var_status">优</view>
-    <view class="str_water-normal">常温水</view>
-    <view class="State_Humidity">{{State.Humidity}}</view>
-    <view class="State_Temperture">{{State.Temperture}}</view>
-    <text style="font-size:medium;margin-top:10px">发送内容：</text>
-    <input class="input" value="{{inputText}}" bindinput="bindInput" maxlength="20"/>
-    <button type="primary" class="button" bindtap="bindSend">发送</button> 
-    <text style="font-size:medium;margin-top:10px">接收内容：</text>
-    <input class="input" disabled value="{{receiveText}}" maxlength="40"/>
-    
-    <button class='Normalbtn' bindtap='outNormal' plain="true" >
-    <image class='Normalpic'src="/images/icon/Normal.png" > </image>
-    </button>
-</view>
+<view class="main-box">
+    <view class="up">
+        <view class="up-date">
+            <view class="up-date-yearweek">
+                <view>2020.3
+                </view>
+                <view>周三
+                </view>
+            </view>
 
+            <view class="up-date-date">/01
+            </view>
+        </view>
+        <view class="up-state">
+            <view>
+                运行状态:
+            </view>
+            <view class="up-state-view">
+                优
+            </view>
+        </view>    
+    </view>
+
+    <view class="line_horizontal"></view>
+    <view class="middle">
+        <view class="middle_up">
+            <view>
+                <image class="middle_up_humidity" src="/images/humidity.png"></image>
+                <text>80</text>
+                <text>%</text>
+            </view>
+            <view class="line_vertical"></view>
+            <view>1</view>
+            <view class="line_vertical"></view>
+           <view>1</view>
+        </view>
+        <view class="middle_down">
+            <view>1</view>
+            <view class="line_vertical"></view>
+            <view>1</view>
+            <view class="line_vertical"></view>
+           <view>1</view>
+        </view>
+    </view>	
+
+    <view class="line_horizontal"></view>
+    <view class="down">
+    03
+    </view>
+</view>
+ 
+
+<view class="container"> 
+	<view class="str_water-normal">常温水</view>
+	<view class="State_Humidity">{{State.Humidity}}</view>
+	<view class="State_Temperture">{{State.Temperture}}</view>
+	<text style="font-size:medium;margin-top:10px">发送内容：</text>
+	<input class="input" value="{{inputText}}" bindinput="bindInput" maxlength="20" />
+	<button type="primary" class="button" bindtap="bindSend">发送</button>
+	<text style="font-size:medium;margin-top:10px">接收内容：</text>
+	<input class="input" disabled value="{{receiveText}}" maxlength="40" />
+
+	<button class='Normalbtn' bindtap='outNormal' plain="true">
+		<image class='Normalpic' src="/images/icon/Normal.png"> </image>
+	</button>
+</view>

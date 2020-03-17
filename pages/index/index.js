@@ -136,7 +136,7 @@ outNormal: function () {
 
       console.log('接收到数据：' + receiveText)
       that.setData({
-        receiveText: that.data.receiveText
+        receiveText:receiveText
       })
       that.receiveService();//接收数据解析
       /*

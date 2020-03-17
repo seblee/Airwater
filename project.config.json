@@ -52,7 +52,7 @@
 				{
 					"id": 0,
 					"name": "启动参数",
-					"pathName": "pages/start/start",
+					"pathName": "pages/index/index",
 					"query": "id=66:00:0A:0B:02:08",
 					"scene": null
 				}
