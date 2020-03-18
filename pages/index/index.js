@@ -1,5 +1,4 @@
-//index.js
-//获取应用实例
+var util = require('../../utils/util.js')
 var app = getApp()
 
 Page({
@@ -8,13 +7,14 @@ Page({
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     //状态显示变量
-    State:{
-          runState: 0 ,//运行状态
-          Temperture:23 ,//温度
-          Humidity: 50 ,//湿度
-          WaterLevel: 0 ,//水位
-          WaterMake: 0 ,//制水
-          Fan: 0 ,//风机
+    State: {
+      runState: 0,//运行状态
+      Temperture: 23,//温度
+      Humidity: 50,//湿度
+      WaterLevel: 0,//水位
+      WaterMake: 0,//制水
+      Fan: 0,//风机
+      PM25: 40,//pm2.5
     },
     inputText: 'FFA50303010203B0',
     receiveText: '',
@@ -23,7 +23,11 @@ Page({
     serviceId: {},
     characteristicsId_w: {},
     characteristicsId_r: {},
-    connected: true
+    connected: true,
+    yearMonth: '2020.01',
+    day: '00',
+    week: '周周'
+
 
   },
   //事件处理函数
@@ -33,20 +37,20 @@ Page({
     })
   },
 
-//输入框
-bindInput: function (e) {
+  //输入框
+  bindInput: function (e) {
     this.setData({
       inputText: e.detail.value
     })
     console.log(e.detail.value)
   },
-//按键发送
-bindSend: function () {
+  //按键发送
+  bindSend: function () {
     var that = this
-    console.log('按键发送bindSend');    
+    console.log('按键发送bindSend');
     this.setData({
-      'State.Humidity':55 ,
-      'State.Temperture':23 ,
+      'State.Humidity': 55,
+      'State.Temperture': 23,
     })
     if (that.data.connected) {
 
@@ -65,33 +69,75 @@ bindSend: function () {
       })
     }
   },
-//出常温水
-outNormal: function () {
-  var that = this
-  console.log('出常温水outNormal');    
+  //出常温水
+  outNormal: function () {
+    var that = this
+    console.log('出常温水outNormal');
 
-  if (that.data.connected) {
-    app.writePack(app.globalData.txConfig.CoNormalWater.id,app.globalData.txConfig.CoNormalWater.value);//调用数据发送函数
-  }
-  else {
-    wx.showModal({
-      title: '提示',
-      content: '蓝牙已断开',
-      showCancel: false,
-      success: function (res) {
-        that.setData({
-          searching: false
-        })
-      }
-    })
-  }
-},
+    if (that.data.connected) {
+      app.writePack(app.globalData.txConfig.CoNormalWater.id, app.globalData.txConfig.CoNormalWater.value);//调用数据发送函数
+    }
+    else {
+      wx.showModal({
+        title: '提示',
+        content: '蓝牙已断开',
+        showCancel: false,
+        success: function (res) {
+          that.setData({
+            searching: false
+          })
+        }
+      })
+    }
+  },
 
   //页面启动进入
   onLoad: function () {
     var that = this
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = now.getMonth() + 1;
+    var day = now.getDate()
+    var weekNum = now.getDay();
+    if (month < 10) {
+      month = '0' + month;
+    };
+    if (day < 10) {
+      day = '0' + day;
+    };
+    var week = ""
+    switch (weekNum) {
+      case 0:
+        week = "周日"
+        break;
+      case 1:
+        week = "周一"
+        break;
+      case 2:
+        week = "周二"
+        break;
+      case 3:
+        week = "周三"
+        break;
+      case 4:
+        week = "周四"
+        break;
+      case 5:
+        week = "周五"
+        break;
+      case 6:
+        week = "周六"
+        break;
+    }
+
+    that.setData({
+      yearMonth: year + '.' + month,
+      day: day,
+      week: week
+    }) 
+
     console.log('index页面onLoad');
-    console.log("app.globalData.g_BdeviceId:",app.globalData.g_BdeviceId)
+    console.log("app.globalData.g_BdeviceId:", app.globalData.g_BdeviceId)
     that.setData({
       deviceId: app.globalData.g_BdeviceId
     })
@@ -99,7 +145,7 @@ outNormal: function () {
     /* 获取设备的服务UUID */
     wx.getBLEDeviceServices({
       deviceId: that.data.deviceId,
-      success: function(service) {
+      success: function (service) {
         var all_UUID = service.services; //取出所有的服务
         console.log('所有的服务', all_UUID);
         var UUID_lenght = all_UUID.length; //获取到服务数组的长度
@@ -113,7 +159,7 @@ outNormal: function () {
             that.setData({
               serviceId: all_UUID[index_uuid].uuid //确定需要的服务UUID
             });
-            app.globalData.g_BserviceId=that.data.serviceId;
+            app.globalData.g_BserviceId = that.data.serviceId;
           };
         };
         console.log('需要的服务UUID', that.data.serviceId)
@@ -136,7 +182,7 @@ outNormal: function () {
 
       console.log('接收到数据：' + receiveText)
       that.setData({
-        receiveText:receiveText
+        receiveText: receiveText
       })
       that.receiveService();//接收数据解析
       /*
@@ -152,75 +198,75 @@ outNormal: function () {
     })
 
   },
-//主页面数据刷新
-homeDisplay:function(){
+  //主页面数据刷新
+  homeDisplay: function () {
 
-  console.log('主页面数据刷新')
-  this.setData({
-    'State.Humidity':app.globalData.rcvState.StHumidity.value[0]/10 ,
-    'State.Temperture':app.globalData.rcvState.StAlarm1.value[5]/10,
-  })
-},
-//protocol
-//接收数据解析
-receiveService:function(){
-  var that = this;
-  var length ;
-  var checksum = 0 ;
-  var address = 0 ;
-  var i ;
+    console.log('主页面数据刷新')
+    this.setData({
+      'State.Humidity': app.globalData.rcvState.StHumidity.value[0] / 10,
+      'State.Temperture': app.globalData.rcvState.StAlarm1.value[5] / 10,
+    })
+  },
+  //protocol
+  //接收数据解析
+  receiveService: function () {
+    var that = this;
+    var length;
+    var checksum = 0;
+    var address = 0;
+    var i;
 
-  var receiveValue = app.string2buf(that.data.receiveText);
-  var buffer = new Uint8Array(receiveValue); 
-  if(buffer[0]==0xFF){//帧头
-    if(buffer[1]==0xA5){     
-      if((buffer[2]==0x01)||(buffer[2]==0x02)||(buffer[2]==0x03)){//功能码
-        length=buffer[3];
-        for(i=0;i<length+4;i++){
-          checksum +=buffer[i];
-        }
-        checksum &= 0xFF;//校验和低位
-        if(checksum==buffer[length+4]) {
-          console.log('接收数据帧正确：', buffer); 
-          address=buffer[4]<<8|buffer[5];//地址
-          switch(address){
-            case app.globalData.rcvState.StAlarm1.id :
-            {
-              var u8buffer=buffer.slice(6,18);
-              app.globalData.rcvState.StAlarm1.value=app.u8ToU16(u8buffer);
-              console.log('数据帧StAlarm1：', app.globalData.rcvState.StAlarm1.value);      
-            }
-              break;
-            case app.globalData.rcvState.StHumidity.id :
-            {
-              var u8buffer=buffer.slice(6,18);
-              app.globalData.rcvState.StHumidity.value=app.u8ToU16(u8buffer);
-              console.log('数据帧StHumidity：', app.globalData.rcvState.StHumidity.value);      
-            }
-              break;
-            default:
-              break;
+    var receiveValue = app.string2buf(that.data.receiveText);
+    var buffer = new Uint8Array(receiveValue);
+    if (buffer[0] == 0xFF) {//帧头
+      if (buffer[1] == 0xA5) {
+        if ((buffer[2] == 0x01) || (buffer[2] == 0x02) || (buffer[2] == 0x03)) {//功能码
+          length = buffer[3];
+          for (i = 0; i < length + 4; i++) {
+            checksum += buffer[i];
           }
-          that.homeDisplay();
+          checksum &= 0xFF;//校验和低位
+          if (checksum == buffer[length + 4]) {
+            console.log('接收数据帧正确：', buffer);
+            address = buffer[4] << 8 | buffer[5];//地址
+            switch (address) {
+              case app.globalData.rcvState.StAlarm1.id:
+                {
+                  var u8buffer = buffer.slice(6, 18);
+                  app.globalData.rcvState.StAlarm1.value = app.u8ToU16(u8buffer);
+                  console.log('数据帧StAlarm1：', app.globalData.rcvState.StAlarm1.value);
+                }
+                break;
+              case app.globalData.rcvState.StHumidity.id:
+                {
+                  var u8buffer = buffer.slice(6, 18);
+                  app.globalData.rcvState.StHumidity.value = app.u8ToU16(u8buffer);
+                  console.log('数据帧StHumidity：', app.globalData.rcvState.StHumidity.value);
+                }
+                break;
+              default:
+                break;
+            }
+            that.homeDisplay();
+          }
+          else {
+            console.log('数据校验错误：', buffer);
+          }
         }
-        else{
-          console.log('数据校验错误：', buffer);                
-        }
-      } 
-    }     
-  };
-},
+      }
+    };
+  },
 
 
   //获取特征值
-  GetCharacteristics: function() {
+  GetCharacteristics: function () {
     var that = this;
     var device_characteristics = [];
     var characteristics_uuid = {};
     wx.getBLEDeviceCharacteristics({
       deviceId: that.data.deviceId,
       serviceId: that.data.serviceId,
-      success: function(res) {
+      success: function (res) {
         var characteristics = res.characteristics; //获取到所有特征值
         var characteristics_length = characteristics.length; //获取到特征值数组的长度
         console.log('获取到特征值', characteristics);
@@ -236,7 +282,7 @@ receiveService:function(){
             that.setData({
               characteristicsId_w: characteristics[index_uuid].uuid, //确定的写入UUID
             });
-            app.globalData.g_BcharacteristicId=that.data.characteristicsId_w;
+            app.globalData.g_BcharacteristicId = that.data.characteristicsId_w;
           };
           /* 判断是否是我们需要的FFB2 */
           if (characteristics_slice == 'FFB2' || characteristics_slice == 'ffb2') {
@@ -256,8 +302,8 @@ receiveService:function(){
           serviceId: that.data.serviceId,
           characteristicId: that.data.characteristicsId_r,
           success: function (res) {
-            console.log('启用notify成功'+ res.errMsg);
-          },            
+            console.log('启用notify成功' + res.errMsg);
+          },
           fail: function () {
             console.log('启动notify失败' + res.errMsg);
           },
