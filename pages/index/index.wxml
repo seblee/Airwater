@@ -1,6 +1,6 @@
-<view class="imagesize"> 
-    <image class='bg-img' mode='aspectFill' src="/images/BG-Blue.png" > </image> 
-</view> 
+<view class="imagesize">
+	<image class='bg-img' mode='aspectFill' src="/images/BG-Blue.png"> </image>
+</view>
 
 <view class="index-page">
 	<view class="main-box">
@@ -83,9 +83,9 @@
 
 		<view class="line_horizontal"></view>
 		<view class="down">
-			<button class='Normalbtn' bindtap='outNormal' plain="true">
+			<view class='Normalbtn' bindtap='outNormal' plain="true">
 				<image class='Normalpic' src="/images/icon/Normal.png"> </image>
-			</button>
+			</view>
 		</view>
 	</view>
 </view>

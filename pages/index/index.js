@@ -15,6 +15,7 @@ Page({
       WaterMake: 0,//制水
       Fan: 0,//风机
       PM25: 40,//pm2.5
+      waterOut:false,
     },
     inputText: 'FFA50303010203B0',
     receiveText: '',
@@ -199,13 +200,30 @@ Page({
 
   },
   //主页面数据刷新
-  homeDisplay: function () {
+  homeDisplay: function (address) {
 
     console.log('主页面数据刷新')
-    this.setData({
-      'State.Humidity': app.globalData.rcvState.StHumidity.value[0] / 10,
-      'State.Temperture': app.globalData.rcvState.StAlarm1.value[5] / 10,
-    })
+    switch (address) {
+      case 500:
+        waterOut
+        this.setData({
+          'State.waterOut': app.globalData.rcvState.StAlarm1.value[5] / 10,
+        })  
+        break
+      case 506:
+        this.setData({
+          'State.Temperture': app.globalData.rcvState.StAlarm1.value[5] / 10,
+        })   
+        break
+      case  512:
+        this.setData({
+          'State.Humidity': app.globalData.rcvState.StHumidity.value[0] / 10,
+        })        
+        break;
+    
+      default:
+        break;
+    }
   },
   //protocol
   //接收数据解析
@@ -247,7 +265,7 @@ Page({
               default:
                 break;
             }
-            that.homeDisplay();
+            that.homeDisplay(address);
           }
           else {
             console.log('数据校验错误：', buffer);
