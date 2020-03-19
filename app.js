@@ -15,7 +15,7 @@ App({
     },
     rcvState:{
       StHardware:{
-        id : 500,
+        id : 500,//连续6个寄存器
         value : '',
       },
       StAlarm1:{
@@ -24,6 +24,22 @@ App({
       },
       StHumidity :{
         id : 512,
+        value : 0,
+      }, 
+      StAin4 :{
+        id : 518,
+        value : 0,
+      }, 
+      StRuntimeComp2:{
+        id : 524,
+        value : 0,
+      }, 
+      StReserve:{
+        id : 530,
+        value : 0,
+      }, 
+      StStatusRemap:{
+        id : 536,
         value : 0,
       }, 
     },
