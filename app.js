@@ -7,6 +7,10 @@ App({
       CoNormalWater:{
         id : 110,
         value : '00011388',
+      },      
+      WaterStop:{
+        id : 110,
+        value : '00000000',
       },
       CoHeatWater:{
         id : 110,
@@ -16,11 +20,11 @@ App({
     rcvState:{
       StHardware:{
         id : 500,//连续6个寄存器
-        value : '',
+        value : 0,
       },
       StAlarm1:{
         id : 506,
-        value : '',
+        value : 0,
       },
       StHumidity :{
         id : 512,
