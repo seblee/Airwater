@@ -40,11 +40,11 @@ Page({
     })
 
   },
-  onShow:function(){
+  onShow: function () {
     this.setData({
       alarmState: app.globalData.rcvState.StHardware.value[5],
     })
-    
+
     var list = [];
     for (let i = 0; i < 16; i++) {
       if (this.data.alarmState & (1 << i)) {
