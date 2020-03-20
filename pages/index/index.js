@@ -99,7 +99,7 @@ Page({
 
   //页面启动进入
   onLoad: function () {
-    var that = this 
+    var that = this
     var now = new Date();
     var year = now.getFullYear();
     var month = now.getMonth() + 1;
@@ -267,6 +267,10 @@ Page({
           'State.Temperture': app.globalData.rcvState.StAlarm1.value[5] / 10,
         })
         break
+      case 506:
+        
+        break
+
       case 512:
         this.setData({
           'State.Humidity': app.globalData.rcvState.StHumidity.value[0] / 10,
