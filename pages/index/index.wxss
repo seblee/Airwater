@@ -22,7 +22,7 @@ page{
   margin: 0rpx 30rpx 20rpx 30rpx;
   padding: 20rpx 10rpx;
   border-radius: 14rpx;
-  /* background-color: dodgerblue; */
+   background-color: dodgerblue;  
 }
 
 .up {
@@ -30,7 +30,9 @@ page{
   flex: 1;
   flex-direction: row;
   align-items: center;
-  padding: 20rpx 30rpx;  
+  padding: 20rpx 30rpx; 
+  background-color: rgb(15, 54, 92);  
+ 
 }
 
 .up-date {
@@ -191,10 +193,10 @@ page{
   margin-top: 40rpx; 
 }
 .down-key-word {
-  font-size: 30rpx;
+  font-size: 40rpx;
   color: black;
-  margin-top: 40rpx;
-  margin-bottom: 160rpx;
+  margin-top: 50rpx;
+  margin-bottom: 220rpx;
 }
 .down-key-description {
   font-size: 40rpx;
@@ -202,13 +204,13 @@ page{
 }
 
 .bg-key-img{
-  width: 240rpx; 
-  height: 240rpx;
+  width: 330rpx; 
+  height: 330rpx;
   position:absolute ;  
   /* background-size:100% 100%;  */
   z-index: -1;  
   left: 50%;
-  margin-left: -120rpx;     
+  margin-left: -165rpx;     
 
 }
 .str_status {
@@ -263,7 +265,7 @@ page{
   font-size: 13px;
   font-weight: normal;
   position: absolute;
-  left: 300rpx;
+  left: 330rpx;
   top: 320rpx;
   right: 0;
   bottom: 0;
@@ -278,13 +280,14 @@ page{
 
 .Normalpic {
   margin-top: 60rpx;
-  width: 300rpx;
-  height: 300rpx;
+  width: 330rpx;
+  height: 330rpx;
   /* border: none; 
   border:0 */
 }
 .Normalbtn
 { 
+  margin-top: 60rpx;
   border: 0;
   border: none;
 }
