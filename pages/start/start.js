@@ -10,7 +10,7 @@ Page({
     moto: '设备配对中，请稍后！',
     deviceId: '',
     deviceName: "",
-    inputValue: '66:00:0A:0B:02:08',
+    inputValue: '66:00:0A:0B:02:0A',
   },
   //事件处理函数，跳转主页 
   goToIndex: function () {
@@ -28,22 +28,38 @@ Page({
     });
     console.log(options.id);
     if(options.id){
-      this.setData({
+      that.setData({
         deviceName: options.id,
       });
       console.log('设备options.id', options.id);
     }
     else{
       app.getStorage_ID();//获取ID
-      this.setData({
+      that.setData({
         deviceName: app.globalData.g_BdeviceId,
       });
-      console.log('设备g_BdeviceId', this.data.deviceName);
+      console.log('设备g_BdeviceId', that.data.deviceName);
     }
+    //TEST
 
-    var deviceName = this.data.deviceName;
-    console.log('设备的Name', deviceName);
-
+    if(that.data.deviceName=="null")
+    {
+        console.log('未找到deviceName:', that.data.deviceName);   
+        wx.hideLoading();
+        /* 连接中动画 */
+        wx.showLoading({
+          title: '请微信扫码连接',
+        });
+    }
+    else
+    {
+      console.log('未找到deviceName:', that.data.deviceName);   
+    /*
+    that.setData({
+      deviceName: that.data.inputValue,
+    });
+    console.log('设备inputValue', that.data.inputValue);
+*/
     wx.closeBluetoothAdapter({
       success: function (res) {
         console.log('关闭蓝牙模块');
@@ -66,7 +82,7 @@ Page({
                       console.log(res);
                       //在搜索到的所有蓝牙中找到需要连接的那一个蓝牙
                       for (var i = 0; i < res.devices.length; i++) {
-                        if (res.devices[i].name == deviceName) {
+                        if (res.devices[i].name == that.data.deviceName) {
                           that.setData({
                             deviceId: res.devices[i].deviceId,
                           })
@@ -91,6 +107,7 @@ Page({
         })
       }
     });
+    }
   },
 
   //连接蓝牙
