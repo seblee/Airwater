@@ -16,7 +16,26 @@ App({
         id: 110,
         value: '00021388',
       },
+      waterMakeOff: {
+        id: 100,
+        value: '0000',
+      },
+      waterMakeOn: {
+        id: 100,
+        value: '0001',
+      },
     },
+    rcvPara: {
+      paraPowerMode: {
+        id: 100,//连续6个寄存器
+        value: 0,
+      },
+      paraStorge: {
+        id: 184,//连续6个寄存器
+        value: 0,
+      },
+    },
+
     rcvState: {
       StHardware: {
         id: 500,//连续6个寄存器

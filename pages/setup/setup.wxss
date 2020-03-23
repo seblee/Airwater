@@ -1,1 +1,45 @@
-/* pages/setup/setup.wxss */
+page {
+  background: rgb(0, 134, 255);
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  padding: 40rpx;
+  align-items: flex-start;
+  color: white;
+}
+
+.setipTitle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  font-size: 70rpx;
+  padding-bottom: 10rpx;
+}
+
+.set-item {
+  display: flex;
+  width: 100%;
+  font-size:50rpx;
+  padding-top: 10rpx;
+  padding-bottom: 10rpx;
+  justify-content: space-between;
+  border: solid 1rpx rgba(194, 142, 142, 0.3);
+  background-color: rgba(255, 255, 255, 0.24);
+  border-radius: 8rpx;
+}
+
+.item-name { 
+  display: flex;
+  justify-content: flex-end; 
+}
+
+.item-value { 
+  display: flex;
+  justify-content: flex-start;  
+  background-color: rgba(65, 63, 66, 0.164);
+  padding-right: 20rpx;
+  padding-left: 20rpx;
+}

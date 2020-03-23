@@ -268,7 +268,7 @@ Page({
         })
         break
       case 506:
-        
+
         break
 
       case 512:
@@ -304,6 +304,20 @@ Page({
             console.log('接收数据帧正确：', buffer);
             address = buffer[4] << 8 | buffer[5];//地址
             switch (address) {
+              case app.globalData.rcvPara.paraStorge.id:
+                {
+                  var u8buffer = buffer.slice(6, 18);
+                  app.globalData.rcvPara.paraStorge.value = app.u8ToU16(u8buffer);
+                  console.log('数据帧 paraStorge ', app.globalData.rcvPara.paraStorge.value);
+                }
+                break;
+                case app.globalData.rcvPara.paraPowerMode.id:
+                  {
+                    var u8buffer = buffer.slice(6, 18);
+                    app.globalData.rcvPara.paraPowerMode.value = app.u8ToU16(u8buffer);
+                    console.log('数据帧 paraPowerMode ', app.globalData.rcvPara.paraPowerMode.value);
+                  }
+                  break;
               case app.globalData.rcvState.StHardware.id:
                 {
                   var u8buffer = buffer.slice(6, 18);

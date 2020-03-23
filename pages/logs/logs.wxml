@@ -4,9 +4,10 @@
     {{index}}: {{item.message}}
   </view> -->
 	<view class="alarmTitle">
-  <view></view>
+		<view></view>
 		<view>告警列表</view>
-<view></view>	</view>
+		<view></view>
+	</view>
 	<view wx:for="{{alarmList}}" wx:for-item="item">
 		<view class="alarmWord">
 			{{index + 1}}. {{item}}
