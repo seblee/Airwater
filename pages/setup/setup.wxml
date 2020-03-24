@@ -1,2 +1,29 @@
-<!--pages/setup/setup.wxml-->
-<text>pages/setup/setup.wxml</text>
+<view class="container page">
+	<!-- <view class="setipTitle">
+		<view></view>
+		<view>用户设置</view>
+		<view></view>
+	</view> -->
+	<view class="set-item">
+		<view class="item-name">制水功能</view>
+    <view class="item-value">
+    <picker bindchange="bindPickerChangeWaterFun" value="{{waterFunIndex}}" range="{{FunOpenClose}}">
+      <view>
+      {{FunOpenClose[waterFunIndex]}}
+      </view>
+    </picker>
+    </view>
+	</view>
+	<view class="set-item">
+		<view class="item-name">
+    <view>贮存功能</view>
+    </view>
+    <view class="item-value">
+    <picker bindchange="bindPickerChangeStorage" value="{{waterStorageIndex}}" range="{{FunOpenClose}}">
+      <view>
+      {{FunOpenClose[waterStorageIndex]}}
+      </view>
+    </picker>
+    </view>
+	</view> 
+</view>

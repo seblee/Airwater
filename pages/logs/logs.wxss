@@ -1,8 +1,27 @@
+page{
+  background: rgb(0, 134, 255);
+}
+
 .log-list {
   display: flex;
   flex-direction: column;
-  padding: 40rpx;
+  padding: 40rpx; 
+  align-items: flex-start;
 }
 .log-item {
   margin: 10rpx;
+}
+.alarmTitle{
+  display: flex;
+  flex-direction: column;
+  align-items: center;  
+  color: white;
+  width: 100%; 
+  font-size: 40rpx;
+  padding-bottom: 40rpx;
+}
+.alarmWord{
+  margin: 0rpx 30rpx 20rpx 30rpx;
+  font-size: 30rpx;
+  color: white;
 }

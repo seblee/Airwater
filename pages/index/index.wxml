@@ -2,8 +2,8 @@
 	<image class='bg-img' mode='aspectFill' src="/images/BG-Blue.png"> </image>
 </view> -->
 
-<view class="index-page">
-	<view class="main-box">
+<view class="index-page" >
+	<view class="container main-box">
 		<view class="up">
 			<view class="up-date">
 				<view class="up-date-yearweek">
