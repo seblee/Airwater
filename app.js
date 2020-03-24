@@ -66,10 +66,13 @@ App({
         value: 0,
       },
     },
+    rcvPageRefresh:{
+      PageHome:'',
+      PageSetup:'',
+      PageLog:'',
+    },
+
     userInfo: null,
-    g_BdeviceId: "",
-    g_BserviceId: "",
-    g_BcharacteristicId: "",
     alarmList: [],
     BLE:{
       link: true,
@@ -142,7 +145,7 @@ App({
   //关闭蓝牙连接
   closeBLEConnection: function () {
     var that = this
-    var deviceId = that.globalData.g_BdeviceId;
+    var deviceId = that.globalData.deviceId;
     console.log("deviceId:", deviceId);
     wx.closeBLEConnection({
       deviceId: deviceId,
@@ -154,14 +157,14 @@ App({
   //存储ID
   setStorage_ID: function () {
     var that = this
-    console.log("setStorage_ID:", that.globalData.g_BdeviceId);
-    wx.setStorageSync('g_BdeviceId', that.globalData.g_BdeviceId);
+    console.log("setStorage_ID:", that.globalData.deviceId);
+    wx.setStorageSync('deviceId', that.globalData.deviceId);
   },
   //获取ID
   getStorage_ID: function () {
     var that = this
-    that.globalData.g_BdeviceId = wx.getStorageSync('g_BdeviceId');
-    console.log("getStorage_ID:", that.globalData.g_BdeviceId);
+    that.globalData.deviceId = wx.getStorageSync('deviceId');
+    console.log("getStorage_ID:", that.globalData.deviceId);
   },
 
 
@@ -169,8 +172,8 @@ App({
   createBLEAdapter: function() {
     var that = this; 
 
-    that.globalData.deviceName=that.globalData.g_BdeviceId;
-    console.log('设备deviceName', that.globalData.deviceName);
+    that.globalData.deviceName=that.globalData.deviceId;
+    console.log('设备deviceName', that.globalData.deviceId);
 
     wx.closeBluetoothAdapter({
       success: function (res) {
@@ -243,7 +246,6 @@ App({
           duration: 1000
         })
         //全局变量
-        that.globalData.g_BdeviceId=that.globalData.deviceId;
         that.globalData.BLE.link=true;
         that.setStorage_ID();//存储deviceId
         that.goToPageIndex();//跳转主页
@@ -264,8 +266,7 @@ App({
 createBLEConnected: function() {   
     var that = this;
 
-  console.log("that.globalData.g_BdeviceId:", that.globalData.g_BdeviceId)
-  that.globalData.deviceId=that.globalData.g_BdeviceId,
+  console.log("that.globalData.deviceId:", that.globalData.deviceId)
 
   /* 获取设备的服务UUID */
   wx.getBLEDeviceServices({
@@ -283,7 +284,6 @@ createBLEConnected: function() {
           var index_uuid = index;
 
           that.globalData.serviceId = all_UUID[index_uuid].uuid; //确定需要的服务UUID
-          that.globalData.g_BserviceId = that.globalData.serviceId;
         };
       };
       console.log('需要的服务UUID', that.globalData.serviceId)
@@ -348,7 +348,6 @@ getCharacteristics: function () {
           // });
           that.globalData.characteristicsId_w = characteristics[index_uuid].uuid; //确定的写入UUID
 
-          that.globalData.g_BcharacteristicId = that.globalData.characteristicsId_w;
         };
         /* 判断是否是我们需要的FFB2 */
         if (characteristics_slice == 'FFB2' || characteristics_slice == 'ffb2') {
@@ -404,6 +403,20 @@ getCharacteristics: function () {
             that.globalData.BLE.connected=true;
             that.globalData.BLE.refreshAddress=address;
             switch (address) {
+              case that.globalData.rcvPara.paraStorge.id: 
+              { 
+                var u8buffer = buffer.slice(6, 18); 
+                that.globalData.rcvPara.paraStorge.value = that.u8ToU16(u8buffer); 
+                console.log('数据帧 paraStorge ', that.globalData.rcvPara.paraStorge.value); 
+              } 
+              break; 
+              case that.globalData.rcvPara.paraPowerMode.id: 
+                { 
+                  var u8buffer = buffer.slice(6, 18); 
+                  that.globalData.rcvPara.paraPowerMode.value = that.u8ToU16(u8buffer); 
+                  console.log('数据帧 paraPowerMode ', that.globalData.rcvPara.paraPowerMode.value); 
+                } 
+                break;
               case that.globalData.rcvState.StHardware.id:
                 {
                   var u8buffer = buffer.slice(6, 18);
@@ -471,9 +484,9 @@ getCharacteristics: function () {
     var that = this;
     var value = str;
 
-    var DeviceId = that.globalData.g_BdeviceId;
-    var ServiceId = that.globalData.g_BserviceId;
-    var CharacteristicsId = that.globalData.g_BcharacteristicId;
+    var DeviceId = that.globalData.deviceId;
+    var ServiceId = that.globalData.serviceId;
+    var CharacteristicsId = that.globalData.characteristicsId_w;
     console.log('value', value);
     /* 将数值转为ArrayBuffer类型数据 */
     var buffer = that.string2buf(value);

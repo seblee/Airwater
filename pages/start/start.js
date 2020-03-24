@@ -31,13 +31,13 @@ Page({
       that.setData({
         deviceName: options.id,
       });
-      app.globalData.g_BdeviceId=options.id,
+      app.globalData.deviceId=options.id,
       console.log('设备options.id', options.id);
     }
     else{
       app.getStorage_ID();//获取ID
       that.setData({
-        deviceName: app.globalData.g_BdeviceId,
+        deviceName: app.globalData.deviceId,
       });
       console.log('设备g_BdeviceId', that.data.deviceName);
     }
