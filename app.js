@@ -3,154 +3,267 @@ App({
 
   //======全局变量====== 
   globalData: {
-    txConfig:{
-      CoNormalWater:{
-        id : 110,
-        value : '00011388',
+    txConfig: {
+      CoNormalWater: {
+        id: 110,
+        value: '00011388',
       },
-      CoHeatWater:{
-        id : 110,
-        value : '00021388',
+      WaterStop: {
+        id: 110,
+        value: '00000000',
+      },
+      CoHeatWater: {
+        id: 110,
+        value: '00021388',
       },
     },
-    rcvState:{
-      StHardware:{
-        id : 500,//连续6个寄存器
-        value : '',
+    rcvState: {
+      StHardware: {
+        id: 500,//连续6个寄存器
+        value: 0,
       },
-      StAlarm1:{
-        id : 506,
-        value : '',
+      StAlarm1: {
+        id: 506,
+        value: 0,
       },
-      StHumidity :{
-        id : 512,
-        value : 0,
-      }, 
-      StAin4 :{
-        id : 518,
-        value : 0,
-      }, 
-      StRuntimeComp2:{
-        id : 524,
-        value : 0,
-      }, 
-      StReserve:{
-        id : 530,
-        value : 0,
-      }, 
-      StStatusRemap:{
-        id : 536,
-        value : 0,
-      }, 
+      StHumidity: {
+        id: 512,
+        value: 0,
+      },
+      StAin4: {
+        id: 518,
+        value: 0,
+      },
+      StRuntimeComp2: {
+        id: 524,
+        value: 0,
+      },
+      StReserve: {
+        id: 530,
+        value: 0,
+      },
+      StStatusRemap: {
+        id: 536,
+        value: 0,
+      },
     },
     userInfo: null,
-    g_BdeviceId : "",
+    g_BdeviceId: "",
     g_BserviceId: "",
     g_BcharacteristicId: "",
+    alarmList: [],
+    BLE:{
+      link: true,
+      connected: true,
+
+    },
+    deviceId: '',
+    deviceName: "",
   },
+
+  //事件处理函数，跳转主页 
+  goToPageIndex: function () {
+    wx.switchTab({
+      url: '/pages/index/index',
+    });
+  },
+
   //======应用程序全局方法======
   /**
 * 将字符串转换成ArrayBufer
 */
- string2buf(str) {
-  let val = ""
-  if(!str) return;
-  let length = str.length;
-  let index = 0;
-  let array = []
-  while(index < length){
-    array.push(str.substring(index,index+2));
-    index = index + 2;
-  }
-  val = array.join(",");
-  // 将16进制转化为ArrayBuffer
-  return new Uint8Array(val.match(/[\da-f]{2}/gi).map(function (h) {
-    return parseInt(h, 16)
-  })).buffer
-},
-
-/**
- * 将ArrayBuffer转换成字符串
- */
- buf2hex(buffer) {
-  var hexArr = Array.prototype.map.call(
-    new Uint8Array(buffer),
-    function (bit) {
-      return ('00' + bit.toString(16)).slice(-2)
+  string2buf(str) {
+    let val = ""
+    if (!str) return;
+    let length = str.length;
+    let index = 0;
+    let array = []
+    while (index < length) {
+      array.push(str.substring(index, index + 2));
+      index = index + 2;
     }
-  )
-  return hexArr.join('');
-},
-/**
- * 将Uint8Array转换成Uint16Array
- */
- u8ToU16(buffer){
-  var u16Buffer= new Uint16Array(buffer);
-  var length= u16Buffer.byteLength/2/2;
+    val = array.join(",");
+    // 将16进制转化为ArrayBuffer
+    return new Uint8Array(val.match(/[\da-f]{2}/gi).map(function (h) {
+      return parseInt(h, 16)
+    })).buffer
+  },
 
-  for(var i=0;i<length;i++)
-  {
-    u16Buffer[i]=u16Buffer[i*2]<<8|u16Buffer[i*2+1]
-  }
-  var u16Array=u16Buffer.slice(0,i);
-  return u16Array;
-},
+  /**
+   * 将ArrayBuffer转换成字符串
+   */
+  buf2hex(buffer) {
+    var hexArr = Array.prototype.map.call(
+      new Uint8Array(buffer),
+      function (bit) {
+        return ('00' + bit.toString(16)).slice(-2)
+      }
+    )
+    return hexArr.join('');
+  },
+  /**
+   * 将Uint8Array转换成Uint16Array
+   */
+  u8ToU16(buffer) {
+    var u16Buffer = new Uint16Array(buffer);
+    var length = u16Buffer.byteLength / 2 / 2;
+
+    for (var i = 0; i < length; i++) {
+      u16Buffer[i] = u16Buffer[i * 2] << 8 | u16Buffer[i * 2 + 1]
+    }
+    var u16Array = u16Buffer.slice(0, i);
+    return u16Array;
+  },
   //关闭蓝牙连接
-  closeBLEConnection: function() {
+  closeBLEConnection: function () {
     var that = this
-    var deviceId=that.globalData.g_BdeviceId;
-    console.log("deviceId:",deviceId);
+    var deviceId = that.globalData.g_BdeviceId;
+    console.log("deviceId:", deviceId);
     wx.closeBLEConnection({
       deviceId: deviceId,
-      success: function(res) {
+      success: function (res) {
         console.log('断开设备连接', res);
       }
-    });    
+    });
   },
   //存储ID
-  setStorage_ID: function() {
+  setStorage_ID: function () {
     var that = this
-    console.log("setStorage_ID:",that.globalData.g_BdeviceId);
-    wx.setStorageSync('g_BdeviceId', that.globalData.g_BdeviceId);  
+    console.log("setStorage_ID:", that.globalData.g_BdeviceId);
+    wx.setStorageSync('g_BdeviceId', that.globalData.g_BdeviceId);
   },
   //获取ID
-  getStorage_ID: function() {
+  getStorage_ID: function () {
     var that = this
-    that.globalData.g_BdeviceId=wx.getStorageSync('g_BdeviceId');  
-    console.log("getStorage_ID:",that.globalData.g_BdeviceId);
+    that.globalData.g_BdeviceId = wx.getStorageSync('g_BdeviceId');
+    console.log("getStorage_ID:", that.globalData.g_BdeviceId);
+  },
+  //连接蓝牙
+  BLEAdapter: function() {
+    var that = this; 
+
+    that.globalData.deviceName=that.globalData.g_BdeviceId;
+    console.log('设备deviceName', that.globalData.deviceName);
+
+    wx.closeBluetoothAdapter({
+      success: function (res) {
+        console.log('关闭蓝牙模块');
+        /* 初始化蓝牙适配器 */
+        wx.openBluetoothAdapter({
+          success: function (res) {
+            console.log('初始化蓝牙适配器成功');
+            wx.hideLoading();
+            wx.showLoading({
+              title: '请稍后....',
+            });
+            wx.startBluetoothDevicesDiscovery({
+              allowDuplicatesKey: false,
+              success: function (res) {
+                console.log('这里是开始搜索附近设备', res);
+                //添加延迟
+                setTimeout(() => {
+                  wx.getBluetoothDevices({
+                    success: function (res) {
+                      console.log(res);
+                      //在搜索到的所有蓝牙中找到需要连接的那一个蓝牙
+                      for (var i = 0; i < res.devices.length; i++) {
+                        if (res.devices[i].name == that.globalData.deviceName) {
+                          //that.setData({
+                          //  deviceId: res.devices[i].deviceId,
+                          //})
+                          that.globalData.deviceId =res.devices[i].deviceId,
+                          console.log("搜索deviceId:",res.devices[i].deviceId)
+                          wx.hideLoading();
+                          /* 连接中动画 */
+                          wx.showLoading({
+                            title: '正在连接...',
+                          });
+                          that.createBLEConnection();
+
+                        }
+                      }
+                    },
+                    fail: function () {
+                      console.log("搜索蓝牙设备失败")
+                    }
+                  });
+                }, 2000);
+              },
+            });
+          },
+        })
+      }
+    });     
+  },
+  //连接蓝牙
+  createBLEConnection: function() {   
+    var that = this;
+
+    var resLink=true;
+    wx.stopBluetoothDevicesDiscovery({
+      success: function(res) {
+        console.log('停止搜索设备', res)
+      }
+    })
+    /* 开始连接蓝牙设备 */
+    wx.createBLEConnection({
+      deviceId: that.globalData.deviceId,
+      success: function (res) {
+        console.log(res)
+        wx.hideLoading()
+        wx.showToast({
+          title: '连接成功',
+          icon: 'success',
+          duration: 1000
+        })
+        //全局变量
+        that.globalData.g_BdeviceId=that.globalData.deviceId,
+        that.setStorage_ID();//存储deviceId
+        that.globalData.link
+        that.goToPageIndex();//跳转主页
+      },
+      fail: function (res) {
+        console.log(res)
+        wx.hideLoading()
+        wx.showModal({
+          title: '提示',
+          content: '连接失败',
+          showCancel: false
+        })
+      }
+    })
   },
 
   /* 写数据打包 */
-  writePack: function(addr,str) {
+  writePack: function (addr, str) {
     var that = this
-    var u8Buffer= new Uint8Array(20);
-    var u8Str= new Uint8Array(that.string2buf(str));
+    var u8Buffer = new Uint8Array(20);
+    var u8Str = new Uint8Array(that.string2buf(str));
 
-    u8Buffer[0]=0xFF;
-    u8Buffer[1]=0xA5;
-    u8Buffer[2]=0x04;
-    u8Buffer[3]=u8Str.byteLength+2;
-    u8Buffer[4]=addr>>8;
-    u8Buffer[5]=addr&0xFF;
-    for(var i=0;i<u8Str.byteLength;i++)
-    {
-      u8Buffer[6+i]=u8Str[i];
+    u8Buffer[0] = 0xFF;
+    u8Buffer[1] = 0xA5;
+    u8Buffer[2] = 0x04;
+    u8Buffer[3] = u8Str.byteLength + 2;
+    u8Buffer[4] = addr >> 8;
+    u8Buffer[5] = addr & 0xFF;
+    for (var i = 0; i < u8Str.byteLength; i++) {
+      u8Buffer[6 + i] = u8Str[i];
     }
-    var checksum=0;
-    for(var j=0;j<i+6;j++){
-      checksum +=u8Buffer[j];
+    var checksum = 0;
+    for (var j = 0; j < i + 6; j++) {
+      checksum += u8Buffer[j];
     }
-    u8Buffer[j]=checksum&0xFF;
-    var u8Array=u8Buffer.slice(0,j+1);
-  //  console.log("打包数据u8Buffer:",u8Buffer,"u8Array:",u8Array,"checksum:",checksum);   
+    u8Buffer[j] = checksum & 0xFF;
+    var u8Array = u8Buffer.slice(0, j + 1);
+    //  console.log("打包数据u8Buffer:",u8Buffer,"u8Array:",u8Array,"checksum:",checksum);   
 
-    var strPack= that.buf2hex(u8Array);
-    console.log("打包字符串strPack:",strPack);   
+    var strPack = that.buf2hex(u8Array);
+    console.log("打包字符串strPack:", strPack);
     that.writebuffer(strPack);
   },
 
   /* 发送数据 */
-  writebuffer: function(str) {
+  writebuffer: function (str) {
     var that = this;
     var value = str;
 
@@ -165,15 +278,15 @@ App({
       serviceId: ServiceId,
       characteristicId: CharacteristicsId,
       value: buffer,
-      success: function(res) {
-        console.log('数据发送成功', buffer,res);
+      success: function (res) {
+        console.log('数据发送成功', buffer, res);
         wx.showToast({
           title: '发送成功',
           icon: 'success',
           duration: 2000
         })
       },
-      fail: function(res) {
+      fail: function (res) {
         console.log('调用失败', res);
         /* 调用失败时，再次调用 */
         wx.writeBLECharacteristicValue({
@@ -181,7 +294,7 @@ App({
           serviceId: ServiceId,
           characteristicId: CharacteristicsId,
           value: buffer,
-          success: function(res) {
+          success: function (res) {
             console.log('第2次数据发送成功', res);
             wx.showToast({
               title: '发送成功',
@@ -189,7 +302,7 @@ App({
               duration: 2000
             })
           },
-          fail: function(res) {
+          fail: function (res) {
             console.log('第2次调用失败', res);
             /* 调用失败时，再次调用 */
             wx.writeBLECharacteristicValue({
@@ -197,7 +310,7 @@ App({
               serviceId: ServiceId,
               characteristicId: CharacteristicsId,
               value: buffer,
-              success: function(res) {
+              success: function (res) {
                 console.log('第3次数据发送成功', res);
                 wx.showToast({
                   title: '发送成功',
@@ -205,7 +318,7 @@ App({
                   duration: 2000
                 })
               },
-              fail: function(res) {
+              fail: function (res) {
                 console.log('第3次调用失败', res);
               }
             });
@@ -218,6 +331,9 @@ App({
   //======生命周期方法======
   onLaunch: function () {
     console.log('onLaunch');
+
+
+
     // 展示本地存储能力
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
@@ -248,7 +364,7 @@ App({
           })
         }
       }
-    }) 
+    })
   },
 
   /**
@@ -276,14 +392,14 @@ App({
   },
   /**
  * 生命周期函数--错误
- */ 
-  onError (msg) {
+ */
+  onError(msg) {
     console.log(msg)
   },
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload: function() {
+  onUnload: function () {
     console.log('onHide');
     var that = this
     that.closeBLEConnection();//关闭蓝牙连接

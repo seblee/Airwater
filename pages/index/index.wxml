@@ -1,6 +1,6 @@
-<view class="imagesize"> 
-    <image class='bg-img' mode='aspectFill' src="/images/BG-Blue.png" > </image> 
-</view> 
+<!-- <view class="imagesize">
+	<image class='bg-img' mode='aspectFill' src="/images/BG-Blue.png"> </image>
+</view> -->
 
 <view class="index-page">
 	<view class="main-box">
@@ -23,9 +23,7 @@
 				<view class="up-state-name">
 					运行状态:
 				</view>
-				<view class="up-state-view">
-					优
-				</view>
+				<view class="up-state-view">{{State.workState}}</view>
 			</view>
 		</view>
 
@@ -47,23 +45,45 @@
 				</view>
 				<view class="line_vertical">1</view>
 				<view class="middle_up_level">
-					<view class="middle_up_l_image">
+					<view wx:if='{{State.WaterLevel===0}}' class="middle_up_l_image">
+						<image class="middle_up_level_image" src="/images/level0.png"></image>
+					</view>
+					<view wx:elif='{{State.WaterLevel===1}}' class="middle_up_l_image">
+						<image class="middle_up_level_image" src="/images/level1.png"></image>
+					</view>
+					<view wx:elif='{{State.WaterLevel===2}}' class="middle_up_l_image">
 						<image class="middle_up_level_image" src="/images/level2.png"></image>
 					</view>
-					<view class="middle_up_l_value">{{State.WaterLevel}}%</view>
+					<view wx:elif='{{State.WaterLevel===3}}' class="middle_up_l_image">
+						<image class="middle_up_level_image" src="/images/level3.png"></image>
+					</view>
+					<view wx:else class="middle_up_l_image">
+						<image class="middle_up_level_image" src="/images/level0.png"></image>
+					</view>
+					<view wx:if='{{State.WaterLevel===0}}' class="middle_up_l_value">缺水</view>
+					<view wx:elif='{{State.WaterLevel===1}}' class="middle_up_l_value">低水位</view>
+					<view wx:elif='{{State.WaterLevel===2}}' class="middle_up_l_value">中水位</view>
+					<view wx:elif='{{State.WaterLevel===3}}' class="middle_up_l_value">高水位</view>
+					<view wx:else class="middle_up_l_value">缺水</view>
 				</view>
 
 			</view>
 			<view class="middle_up">
 				<view class="middle_up_H">
-					<view class="middle_up_h_image">
+					<view wx:if="{{State.waterOut}}" class="middle_up_h_image">
 						<image class="middle_up_humidity" src="/images/Water0.gif"></image>
+					</view>
+					<view wx:else class="middle_up_h_image">
+						<image class="middle_up_humidity" src="/images/Water.png"></image>
 					</view>
 				</view>
 				<view class="line_vertical">1</view>
 				<view class="middle_up_T">
-					<view class="middle_up_h_image">
+					<view wx:if="{{State.Fan}}" class="middle_up_h_image">
 						<image class="middle_up_humidity" src="/images/Fan0.gif"></image>
+					</view>
+					<view wx:else class="middle_up_h_image">
+						<image class="middle_up_humidity" src="/images/Fan.png"></image>
 					</view>
 				</view>
 				<view class="line_vertical">1</view>
@@ -74,34 +94,21 @@
 					<view class="middle_down_pm25_value"> {{'<'}}{{State.PM25}}ug/m³ </view>
 				</view>
 			</view>
-
-
 			<view class="middle_down">
-
 			</view>
 		</view>
-
 		<view class="line_horizontal"></view>
 		<view class="down">
-			<button class='Normalbtn' bindtap='outNormal' plain="true">
-				<image class='Normalpic' src="/images/icon/Normal.png"> </image>
-			</button>
+			<view wx:if="{{State.waterOut}}" class='Normalbtn' bindtap='outNormal'>
+				<image class='bg-key-img' mode='aspectFill' src="../../images/icon/Normal2.png"> </image>
+				<view class="down-key-word">常温水</view>
+			</view>
+			<view wx:else class='Normalbtn' bindtap='outNormal'>
+				<image class='bg-key-img' mode='aspectFill' src="../../images/icon/Normal.png"> </image>
+				<view class="down-key-word">常温水</view>
+			</view>
+			<view wx:if="{{State.waterOut}}" class="down-key-description">正在出水 触摸停止</view>
+			<view wx:else class="down-key-description">触摸出水</view>
 		</view>
 	</view>
 </view>
-
-<!-- 
-<view class="container">
-	<view class="str_water-normal">常温水</view>
-	<view class="State_Humidity">{{State.Humidity}}</view> -->
-<!-- <view class="State_Temperture">{{State.Temperture}}</view>
-	<text style="font-size:medium;margin-top:10px">发送内容：</text>
-	<input class="input" value="{{inputText}}" bindinput="bindInput" maxlength="20" />
-	<button type="primary" class="button" bindtap="bindSend">发送</button>
-	<text style="font-size:medium;margin-top:10px">接收内容：</text>
-	<input class="input" disabled value="{{receiveText}}" maxlength="40" />
-
-	<button class='Normalbtn' bindtap='outNormal' plain="true">
-		<image class='Normalpic' src="/images/icon/Normal.png"> </image>
-	</button>
-</view> -->

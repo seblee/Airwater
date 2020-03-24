@@ -4,6 +4,10 @@
     {{index}}: {{item.message}}
   </view>
   <text>\r\n\n\n</text>
+  <view wx:for="{{alarmList}}" wx:for-item="item">
+     <text class="log-item">{{index + 1}}. {{item}}</text>
+  </view>
+  <text>\r\n\n\n</text>
   <block wx:for="{{logs}}" wx:for-item="log">
     <text class="log-item">{{index + 1}}. {{log}}</text>
   </block>
