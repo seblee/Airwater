@@ -55,7 +55,7 @@ Page({
     else
     {
       console.log('找到deviceName:', that.data.deviceName);   
-      app.BLEAdapter();//蓝牙连接
+      app.createBLEAdapter();//蓝牙连接
 
     }
   },
