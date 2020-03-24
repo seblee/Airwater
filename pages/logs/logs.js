@@ -40,19 +40,11 @@ Page({
     })
 
   },
-<<<<<<< HEAD
-  onShow:function(){
-    this.setData({
-      alarmState: app.globalData.rcvState.StHardware.value[5],
-    })
-    
-=======
   onShow: function () {
     this.setData({
       alarmState: app.globalData.rcvState.StHardware.value[5],
     })
 
->>>>>>> devLee
     var list = [];
     for (let i = 0; i < 16; i++) {
       if (this.data.alarmState & (1 << i)) {
