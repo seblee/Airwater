@@ -195,6 +195,7 @@ Page({
         {
           level = 0;
         }
+        //运行状态
         var workstate = '优'
         if (app.globalData.rcvState.StHardware.value[2] & 0x4000)
           workstate = '异常'

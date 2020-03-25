@@ -19,6 +19,9 @@
         </view>
         <image class="logo" src="/images/more/logo_TQ2.png"></image>
         <text class="copyright">纯净之水天上来</text>
+          <text class="Test1">{{receiveText2}}</text>
+          <text class="Test2">{{receiveText}}</text>
+        <text class="Test3">{{StateTest}}</text>
         </view>
     </view>
   </block>

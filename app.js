@@ -80,6 +80,7 @@ App({
       refreshAddress:"",
     },
     inputText: 'FFA50303010203B0',
+    BdeviceId: '',  
     receiveText: '',
     deviceId: '',
     deviceName: "",
@@ -87,6 +88,8 @@ App({
     characteristicsId_w: {},
     characteristicsId_r: {},
     connected: true,
+    //
+    StateTest: '',
   },
 
   //事件处理函数，跳转主页 
@@ -158,12 +161,14 @@ App({
   setStorage_ID: function () {
     var that = this
     console.log("setStorage_ID:", that.globalData.deviceId);
-    wx.setStorageSync('deviceId', that.globalData.deviceId);
+    var BdeviceId=that.globalData.deviceId;
+    wx.setStorageSync('BdeviceId', BdeviceId);
   },
   //获取ID
   getStorage_ID: function () {
     var that = this
-    that.globalData.deviceId = wx.getStorageSync('deviceId');
+    var BdeviceId=wx.getStorageSync('BdeviceId');
+    that.globalData.deviceId=BdeviceId;
     console.log("getStorage_ID:", that.globalData.deviceId);
   },
 
@@ -174,10 +179,11 @@ App({
 
     that.globalData.deviceName=that.globalData.deviceId;
     console.log('设备deviceName', that.globalData.deviceId);
-
+    that.globalData.StateTest|=0x10;
     wx.closeBluetoothAdapter({
       success: function (res) {
         console.log('关闭蓝牙模块');
+        that.globalData.StateTest|=0x20;
         /* 初始化蓝牙适配器 */
         wx.openBluetoothAdapter({
           success: function (res) {
@@ -190,6 +196,12 @@ App({
               allowDuplicatesKey: false,
               success: function (res) {
                 console.log('这里是开始搜索附近设备', res);
+                wx.hideLoading();
+                wx.showLoading({
+                  title: '搜索设备....',
+                });
+                that.globalData.StateTest|=0x40;
+
                 //添加延迟
                 setTimeout(() => {
                   wx.getBluetoothDevices({
@@ -201,6 +213,7 @@ App({
                           //that.setData({
                           //  deviceId: res.devices[i].deviceId,
                           //})
+                          that.globalData.StateTest|=0x80;
                           that.globalData.deviceId =res.devices[i].deviceId,
                           console.log("搜索deviceId:",res.devices[i].deviceId)
                           wx.hideLoading();
@@ -214,15 +227,40 @@ App({
                       }
                     },
                     fail: function () {
+                      that.globalData.StateTest|=0x100;
                       console.log("搜索蓝牙设备失败")
                     }
                   });
-                }, 2000);
+                }, 3000);
+              },
+              fail: function (res) {
+                that.globalData.StateTest|=0x200;
+                console.log('开始搜索蓝牙失败');
+                wx.hideLoading();
+                wx.showLoading({
+                  title: '开始搜索蓝牙失败....',
+                });
               },
             });
           },
+          fail: function (res) {
+            that.globalData.StateTest|=0x400;
+            console.log('初始化蓝牙适配器失败');
+            wx.hideLoading();
+            wx.showLoading({
+              title: '初始化蓝牙失败....',
+            });
+          },
         })
-      }
+      },
+      fail: function (res) {
+        that.globalData.StateTest|=0x800;
+        console.log('关闭蓝牙蓝牙失败');
+        wx.hideLoading();
+        wx.showLoading({
+          title: '关闭蓝牙失败....',
+        });
+      },
     });     
   },
   //连接蓝牙
@@ -554,7 +592,7 @@ getCharacteristics: function () {
     // if(that.globalData.BLE.link==true){
     //   that.createBLEConnected();
     // }
-
+    that.getStorage_ID();//获取ID
     // 展示本地存储能力
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())

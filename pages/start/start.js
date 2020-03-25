@@ -11,6 +11,9 @@ Page({
     deviceId: '',
     deviceName: "",
     inputValue: '66:00:0A:0B:02:0A',
+    receiveText: '',
+    receiveText2: '',
+    StateTest: '',
   },
   //事件处理函数，跳转主页 
   goToIndex: function () {
@@ -22,6 +25,7 @@ Page({
   onLoad: function(options) {
     var that = this;
 
+    app.globalData.StateTest=0;
     console.log('start页面onLoad');
     wx.showLoading({
       title: '请打开蓝牙',
@@ -33,31 +37,45 @@ Page({
       });
       app.globalData.deviceId=options.id,
       console.log('设备options.id', options.id);
+      app.globalData.StateTest|=0x01;
     }
     else{
-      app.getStorage_ID();//获取ID
+      // app.getStorage_ID();//获取ID
+      // var BdeviceId=wx.getStorageSync('BdeviceId');
+      // that.globalData.deviceId = BdeviceId;
       that.setData({
         deviceName: app.globalData.deviceId,
       });
-      console.log('设备g_BdeviceId', that.data.deviceName);
+      console.log('设备deviceId', that.data.deviceName);
+      app.globalData.StateTest|=0x02;
     }
     //TEST
 
-    if(that.data.deviceName=="null")
+    if(that.data.deviceName!='')
     {
+        this.setData({
+          'receiveText2': that.data.deviceName,
+        })
+        app.globalData.StateTest|=0x08;
+        console.log('找到deviceName:', that.data.deviceName);   
+        app.createBLEAdapter();//蓝牙连接
+    }
+    else
+    {
+      app.globalData.StateTest|=0x04;
         console.log('未找到deviceName:', that.data.deviceName);   
         wx.hideLoading();
         /* 连接中动画 */
         wx.showLoading({
           title: '请微信扫码连接',
-        });
+        });    
     }
-    else
-    {
-      console.log('找到deviceName:', that.data.deviceName);   
-      app.createBLEAdapter();//蓝牙连接
 
-    }
+    this.setData({
+      'receiveText': app.globalData.deviceId,
+      'StateTest': app.globalData.StateTest,
+    })
+ 
   },
 
   /**
