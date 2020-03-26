@@ -176,7 +176,7 @@ App({
   getStorage_ID: function() {
     var that = this
     that.globalData.deviceName=wx.getStorageSync('deviceName');  
-    console.log("getStorage_ID:",that.globalData.deviceName);
+    console.log("deviceName:",that.globalData.deviceName);
   },
 
 

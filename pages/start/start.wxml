@@ -1,28 +1,30 @@
 <!--start.wxml-->
 <view class="container">
-  <view class="remind-box" wx:if="{{remind}}">
-    <image class="remind-img" src="/images/more/loading.gif"></image>
-  </view>
-  <block wx:else>
-    <image class="title" src="/images/more/Water.gif"></image>
-    <view class="content">
-      <view class="hd" style="transform:rotateZ({{angle}}deg);">
-        <image class="user" src="{{userInfo.avatarUrl}}"></image>
-        <image class="wave" src="/images/more/wave.png" mode="aspectFill"></image>
-        <image class="wave wave-bg" src="/images/more/wave.png" mode="aspectFill"></image>
-      </view>
-      <view class="bd">
-        <image class="remind-link" src="/images/more/loading.gif"></image>
-        <text class="moto">{{moto}}</text>
-        <view class="confirm-btn" bindtap='goToIndex'>
-          <text >首页</text>
-        </view>
-        <image class="logo" src="/images/more/logo_TQ2.png"></image>
-        <text class="copyright">纯净之水天上来</text>
-          <text class="Test1">{{receiveText2}}</text>
-          <text class="Test2">{{receiveText}}</text>
-        <text class="Test3">{{StateTest}}</text>
-        </view>
-    </view>
-  </block>
+	<view class="remind-box" wx:if="{{remind}}">
+		<image class="remind-img" src="/images/more/loading.gif"></image>
+	</view>
+	<block wx:else>
+		<image class="title" src="/images/more/Water.gif"></image>
+		<view class="content">
+			<view class="hd" style="transform:rotateZ({{angle}}deg);">
+				<image class="user" src="{{userInfo.avatarUrl}}"></image>
+				<image class="wave" src="/images/more/wave.png" mode="aspectFill"></image>
+				<image class="wave wave-bg" src="/images/more/wave.png" mode="aspectFill"></image>
+			</view>
+			<view class="bd">
+				<image class="remind-link" src="/images/more/loading.gif"></image>
+				<text class="moto">{{moto}}</text>
+				<view class="confirm-btn" bindtap='goToIndex'>
+					<text >首页</text>
+				</view>
+				<image class="logo" src="/images/more/logo_TQ2.png"></image>
+				<text class="copyright">纯净之水天上来</text>
+        <view wx:if='{{Statepara==1}}'><text>内存参数</text> </view>
+        <view wx:else><text>扫码参数</text> </view> 
+				<text class="Test1">{{receiveText2}}</text>
+				<text class="Test2">{{receiveText}}</text>
+				<text class="Test3">{{StateTest}}</text>
+			</view>
+		</view>
+	</block>
 </view>

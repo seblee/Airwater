@@ -13,7 +13,8 @@ Page({
     inputValue: '66:00:0A:0B:02:0A',
     receiveText: '',
     receiveText2: '',
-    StateTest: '',
+    StateTest: 0,
+    Statepara: 0,
   },
   //事件处理函数，跳转主页 
   goToIndex: function () {
@@ -34,17 +35,17 @@ Page({
     if(options.id){
       that.setData({
         deviceName: options.id,
+        Statepara:0,
       });
       app.globalData.deviceName=options.id,
       console.log('设备options.id', options.id);
       app.globalData.StateTest|=0x01;
     }
     else{
-      // app.getStorage_ID();//获取ID
-      // var BdeviceId=wx.getStorageSync('BdeviceId');
-      // that.globalData.g_BdeviceId = BdeviceId;
+      app.getStorage_ID();//获取ID
       that.setData({
         deviceName: app.globalData.deviceName,
+        Statepara:1,
       });
       console.log('设备deviceId', app.globalData.deviceName);
       app.globalData.StateTest|=0x02;
