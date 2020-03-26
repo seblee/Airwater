@@ -24,46 +24,54 @@ App({
         id: 100,
         value: '0001',
       },
+      waterStoreOff: {
+        id: 184,
+        value: '0000',
+      },
+      waterStoreOn: {
+        id: 184,
+        value: '0001',
+      },
     },
     rcvPara: {
       paraPowerMode: {
         id: 100,//连续6个寄存器
-        value: 0,
+        value: [0, 0, 0, 0, 0, 0],
       },
       paraStorge: {
         id: 184,//连续6个寄存器
-        value: 0,
+        value: [0, 0, 0, 0, 0, 0],
       },
     },
 
     rcvState: {
       StHardware: {
         id: 500,//连续6个寄存器
-        value: 0,
+        value: [0, 0, 0, 0, 0, 0],
       },
       StAlarm1: {
         id: 506,
-        value: 0,
+        value: [0, 0, 0, 0, 0, 0],
       },
       StHumidity: {
         id: 512,
-        value: 0,
+        value: [0, 0, 0, 0, 0, 0],
       },
       StAin4: {
         id: 518,
-        value: 0,
+        value: [0, 0, 0, 0, 0, 0],
       },
       StRuntimeComp2: {
         id: 524,
-        value: 0,
+        value: [0, 0, 0, 0, 0, 0],
       },
       StReserve: {
         id: 530,
-        value: 0,
+        value: [0, 0, 0, 0, 0, 0],
       },
       StStatusRemap: {
         id: 536,
-        value: 0,
+        value: [0, 0, 0, 0, 0, 0],
       },
     },
     rcvPageRefresh: {
@@ -479,7 +487,9 @@ App({
               default:
                 break;
             }
-            //            that.homeDisplay(address);
+            let pages = getCurrentPages()
+            if (pages[pages.length - 1].showDisplay)
+              pages[pages.length - 1].showDisplay(address);
           }
           else {
             console.log('数据校验错误：', buffer);

@@ -1,45 +1,38 @@
 page {
-  background: rgb(0, 134, 255);
+  background-color: #F6F6F6;
 }
 
 .page {
   display: flex;
   flex-direction: column;
-  padding: 40rpx;
-  align-items: flex-start;
-  color: white;
-}
-
-.setipTitle {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  font-size: 70rpx;
-  padding-bottom: 10rpx;
+  margin: 20rpx;
+  align-items: stretch;
 }
 
 .set-item {
   display: flex;
-  width: 100%;
-  font-size:50rpx;
-  padding-top: 10rpx;
-  padding-bottom: 10rpx;
+  font-size: 46rpx;
+  padding: 16rpx 20rpx;
+  margin: 0 20rpx;
   justify-content: space-between;
-  border: solid 1rpx rgba(194, 142, 142, 0.3);
-  background-color: rgba(255, 255, 255, 0.24);
-  border-radius: 8rpx;
+  border-bottom: solid 1rpx rgba(0, 0, 0, .1);
+  background-color: rgb(255, 255, 255);
 }
 
+ 
 .item-name { 
-  display: flex;
-  justify-content: flex-end; 
 }
 
-.item-value { 
+.item-value {
   display: flex;
-  justify-content: flex-start;  
-  background-color: rgba(65, 63, 66, 0.164);
-  padding-right: 20rpx;
-  padding-left: 20rpx;
+  align-items: center;
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+
 }
+ 
+.input-sum, .default-text {
+  font-size: 46rpx;
+  text-align: right;
+}  

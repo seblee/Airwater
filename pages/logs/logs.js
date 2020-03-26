@@ -36,7 +36,6 @@ Page({
       logs: (wx.getStorageSync('logs') || []).map(log => {
         return util.formatTime(new Date(log))
       }),
-      alarmState: app.globalData.rcvState.StHardware.value[5],
     })
 
   },
@@ -44,7 +43,6 @@ Page({
     this.setData({
       alarmState: app.globalData.rcvState.StHardware.value[5],
     })
-
     var list = [];
     for (let i = 0; i < 16; i++) {
       if (this.data.alarmState & (1 << i)) {
@@ -54,5 +52,29 @@ Page({
     this.setData({
       alarmList: list,
     })
-  }
+  },
+
+  //页面数据刷新
+  showDisplay: function (address) {
+
+    console.log('log页面数据刷新' + address)
+    switch (address) {
+      case app.globalData.rcvState.StHardware.id:
+        this.setData({
+          alarmState: app.globalData.rcvState.StHardware.value[5],
+        })
+        var list = [];
+        for (let i = 0; i < 16; i++) {
+          if (this.data.alarmState & (1 << i)) {
+            list.push(this.data.alarmDescription[i])
+          }
+        }
+        this.setData({
+          alarmList: list,
+        })
+        break
+      default:
+        break;
+    }
+  },
 })

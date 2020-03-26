@@ -1,27 +1,25 @@
 page{
-  background: rgb(0, 134, 255);
+  background-color: #F6F6F6;
 }
 
 .log-list {
   display: flex;
   flex-direction: column;
-  padding: 40rpx; 
-  align-items: flex-start;
-}
-.log-item {
-  margin: 10rpx;
-}
-.alarmTitle{
-  display: flex;
-  flex-direction: column;
-  align-items: center;  
-  color: white;
-  width: 100%; 
+  margin: 20rpx;
+  align-items: stretch;
+} 
+.alarmTitle{ 
   font-size: 40rpx;
-  padding-bottom: 40rpx;
+  padding: 16rpx 20rpx;
+  margin: 0 20rpx;
+  background-color: rgb(255, 255, 255);
 }
 .alarmWord{
-  margin: 0rpx 30rpx 20rpx 30rpx;
-  font-size: 30rpx;
-  color: white;
+  /* display: flex; */
+  font-size: 46rpx;
+  padding: 16rpx 20rpx;
+  margin: 0 20rpx;
+  /* justify-content: space-between; */
+  border-bottom: solid 1rpx rgba(0, 0, 0, .1);
+  background-color: rgb(255, 255, 255);
 }

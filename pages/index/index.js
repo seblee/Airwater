@@ -138,26 +138,78 @@ Page({
 
     console.log('index页面onLoad');
 
-     //蓝牙数据通信
-     app.createBLEConnected();
-     //主页面数据定时刷新
-     var i = setInterval(function() {
-      that.indexPageRefresh();
-       }, 2000)
-    
-      // var i = setInterval(function() {
-      // var address=app.globalData.BLE.refreshAddress;
-      // that.homeDisplay(address);
-      //  }, 2000)
-    
-    // var address=app.globalData.BLE.refreshAddress;
-    // that.homeDisplay(address);
+    //蓝牙数据通信
+    app.createBLEConnected();
   },
   //主页面数据刷新
-  indexPageRefresh: function () {
+  onShow: function () {
 
     console.log('主页面数据刷新')
 
+    var level = 0;
+    //水位状态
+    if ((app.globalData.rcvState.StHardware.value[3] & 0x0008) === 0)//到达低水位
+    {
+      level = 1;
+
+      if ((app.globalData.rcvState.StHardware.value[3] & 0x0020) !== 0)//饮水箱4浮球
+      {
+        if ((app.globalData.rcvState.StHardware.value[3] & 0x0040) === 0)//到达中水位
+        {
+          level = 2;
+          if ((app.globalData.rcvState.StHardware.value[3] & 0x0010) === 0)//到达满水位
+          {
+            level = 3;
+          }
+          else {
+            level = 2;
+          }
+        }
+        else {
+          level = 1;
+        }
+      }
+      else {
+        if ((app.globalData.rcvState.StHardware.value[3] & 0x0010) === 0)//到达满水位
+        {
+          level = 3;
+        }
+        else {
+          level = 1;
+        }
+      }
+    }
+    else//缺水
+    {
+      level = 0;
+    }
+    //运行状态
+    var workstate = '优'
+    if (app.globalData.rcvState.StHardware.value[2] & 0x4000)
+      workstate = '异常'
+    else
+      workstate = '优'
+
+    this.setData({
+      'State.waterOut': (app.globalData.rcvState.StHardware.value[2] & 0x0004),
+      'State.Fan': (app.globalData.rcvState.StHardware.value[4] & 0x0008),
+      'State.WaterLevel': level,
+      'State.workState': workstate,
+    })
+    console.log('告警:' + app.globalData.rcvState.StHardware.value[2] + ' ' + workstate + ' ' + this.data.State.workState)
+    //温度 湿度
+    this.setData({
+      'State.Temperture': app.globalData.rcvState.StAlarm1.value[5] / 10,
+      'State.Humidity': app.globalData.rcvState.StHumidity.value[0] / 10,
+    })
+  },
+
+  //主页面数据刷新
+  showDisplay: function (address) {
+
+    console.log('index页面数据刷新' + address)
+    switch (address) {
+      case app.globalData.rcvState.StHardware.id:
         var level = 0;
         //水位状态
         if ((app.globalData.rcvState.StHardware.value[3] & 0x0008) === 0)//到达低水位
@@ -195,7 +247,6 @@ Page({
         {
           level = 0;
         }
-        //运行状态
         var workstate = '优'
         if (app.globalData.rcvState.StHardware.value[2] & 0x4000)
           workstate = '异常'
@@ -208,87 +259,21 @@ Page({
           'State.WaterLevel': level,
           'State.workState': workstate,
         })
-        console.log('告警:' +app.globalData.rcvState.StHardware.value[2] + ' ' + workstate + ' ' + this.data.State.workState)
-        //温度
+        console.log(app.globalData.rcvState.StHardware.value[2] + ' ' + workstate + ' ' + this.data.State.workState)
+        break
+      case app.globalData.rcvState.StAlarm1.id:
         this.setData({
           'State.Temperture': app.globalData.rcvState.StAlarm1.value[5] / 10,
         })
-        //湿度
+        break
+      case app.globalData.rcvState.StHumidity.id:
         this.setData({
           'State.Humidity': app.globalData.rcvState.StHumidity.value[0] / 10,
         })
+        break;
+
+      default:
+        break;
+    }
   },
-
-  //  //主页面数据刷新
-  //  homeDisplay: function (address) {
-
-  //   console.log('主页面数据刷新' + address)
-  //   switch (address) {
-  //     case 500:
-  //       var level = 0;
-  //       //水位状态
-  //       if ((app.globalData.rcvState.StHardware.value[3] & 0x0008) === 0)//到达低水位
-  //       {
-  //         level = 1;
-
-  //         if ((app.globalData.rcvState.StHardware.value[3] & 0x0020) !== 0)//饮水箱4浮球
-  //         {
-  //           if ((app.globalData.rcvState.StHardware.value[3] & 0x0040) === 0)//到达中水位
-  //           {
-  //             level = 2;
-  //             if ((app.globalData.rcvState.StHardware.value[3] & 0x0010) === 0)//到达满水位
-  //             {
-  //               level = 3;
-  //             }
-  //             else {
-  //               level = 2;
-  //             }
-  //           }
-  //           else {
-  //             level = 1;
-  //           }
-  //         }
-  //         else {
-  //           if ((app.globalData.rcvState.StHardware.value[3] & 0x0010) === 0)//到达满水位
-  //           {
-  //             level = 3;
-  //           }
-  //           else {
-  //             level = 1;
-  //           }
-  //         }
-  //       }
-  //       else//缺水
-  //       {
-  //         level = 0;
-  //       }
-  //       var workstate = '优'
-  //       if (app.globalData.rcvState.StHardware.value[2] & 0x4000)
-  //         workstate = '异常'
-  //       else
-  //         workstate = '优'
-
-  //       this.setData({
-  //         'State.waterOut': (app.globalData.rcvState.StHardware.value[2] & 0x0004),
-  //         'State.Fan': (app.globalData.rcvState.StHardware.value[4] & 0x0008),
-  //         'State.WaterLevel': level,
-  //         'State.workState': workstate,
-  //       })
-  //       console.log(app.globalData.rcvState.StHardware.value[2] + ' ' + workstate + ' ' + this.data.State.workState)
-  //       break
-  //     case 506:
-  //       this.setData({
-  //         'State.Temperture': app.globalData.rcvState.StAlarm1.value[5] / 10,
-  //       })
-  //       break
-  //     case 512:
-  //       this.setData({
-  //         'State.Humidity': app.globalData.rcvState.StHumidity.value[0] / 10,
-  //       })
-  //       break;
-
-  //     default:
-  //       break;
-  //   }
-  // },
 })
