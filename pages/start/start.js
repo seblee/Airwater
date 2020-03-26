@@ -35,44 +35,44 @@ Page({
       that.setData({
         deviceName: options.id,
       });
-      app.globalData.deviceId=options.id,
+      app.globalData.deviceName=options.id,
       console.log('设备options.id', options.id);
       app.globalData.StateTest|=0x01;
     }
     else{
       // app.getStorage_ID();//获取ID
       // var BdeviceId=wx.getStorageSync('BdeviceId');
-      // that.globalData.deviceId = BdeviceId;
+      // that.globalData.g_BdeviceId = BdeviceId;
       that.setData({
-        deviceName: app.globalData.deviceId,
+        deviceName: app.globalData.deviceName,
       });
-      console.log('设备deviceId', that.data.deviceName);
+      console.log('设备deviceId', app.globalData.deviceName);
       app.globalData.StateTest|=0x02;
     }
     //TEST
 
-    if(that.data.deviceName!='')
+    if(app.globalData.deviceName!='')
     {
         this.setData({
           'receiveText2': that.data.deviceName,
         })
         app.globalData.StateTest|=0x08;
-        console.log('找到deviceName:', that.data.deviceName);   
+        console.log('找到deviceName:', app.globalData.deviceName);   
         app.createBLEAdapter();//蓝牙连接
     }
     else
     {
       app.globalData.StateTest|=0x04;
-        console.log('未找到deviceName:', that.data.deviceName);   
+        console.log('未找到deviceName:', app.globalData.deviceName);   
         wx.hideLoading();
         /* 连接中动画 */
         wx.showLoading({
-          title: '请微信扫码连接',
+          title: '请微信扫码连接...',
         });    
     }
 
     this.setData({
-      'receiveText': app.globalData.deviceId,
+      'receiveText': app.globalData.deviceName,
       'StateTest': app.globalData.StateTest,
     })
  

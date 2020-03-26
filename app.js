@@ -88,6 +88,7 @@ App({
       refreshAddress: "",
     },
     inputText: 'FFA50303010203B0',
+    g_BdeviceId : "",
     BdeviceId: '',
     receiveText: '',
     deviceId: '',
@@ -166,18 +167,16 @@ App({
     });
   },
   //存储ID
-  setStorage_ID: function () {
+  setStorage_ID: function() {
     var that = this
-    console.log("setStorage_ID:", that.globalData.deviceId);
-    var BdeviceId = that.globalData.deviceId;
-    wx.setStorageSync('BdeviceId', BdeviceId);
+    console.log("setStorage_Name:",that.globalData.deviceName);
+    wx.setStorageSync('deviceName', that.globalData.deviceName);  
   },
   //获取ID
-  getStorage_ID: function () {
+  getStorage_ID: function() {
     var that = this
-    var BdeviceId = wx.getStorageSync('BdeviceId');
-    that.globalData.deviceId = BdeviceId;
-    console.log("getStorage_ID:", that.globalData.deviceId);
+    that.globalData.deviceName=wx.getStorageSync('deviceName');  
+    console.log("getStorage_ID:",that.globalData.deviceName);
   },
 
 
@@ -185,8 +184,7 @@ App({
   createBLEAdapter: function () {
     var that = this;
 
-    that.globalData.deviceName = that.globalData.deviceId;
-    console.log('设备deviceName', that.globalData.deviceId);
+    console.log('设备deviceName', that.globalData.deviceName);
     that.globalData.StateTest |= 0x10;
     wx.closeBluetoothAdapter({
       success: function (res) {
@@ -294,6 +292,7 @@ App({
         //全局变量
         that.globalData.BLE.link = true;
         that.setStorage_ID();//存储deviceId
+        that.getStorage_ID();//存储deviceId
         that.goToPageIndex();//跳转主页
       },
       fail: function (res) {
